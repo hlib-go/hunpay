@@ -1,0 +1,5 @@
+.vscode
+.idea
+*.iml
+*.exe
+/v3test/cert/*
