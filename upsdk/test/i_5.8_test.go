@@ -2,7 +2,7 @@ package test
 
 import (
 	"encoding/json"
-	"hunpay/upsdk"
+	"github.com/hlib-go/hunpay/upsdk"
 	"testing"
 	"time"
 )

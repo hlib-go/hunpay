@@ -1,7 +1,7 @@
 package test
 
 import (
-	"hunpay/upsdk"
+	"github.com/hlib-go/hunpay/upsdk"
 	"testing"
 )
 
