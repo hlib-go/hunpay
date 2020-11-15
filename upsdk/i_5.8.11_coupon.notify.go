@@ -9,7 +9,7 @@ import (
 )
 
 // 优惠券变动状态通知
-func CouponNotifyHandler(cbFn func(requestId string, notifyResult *CouponNotify) error) http.Handler {
+func CouponNotifyHandler(cbFn func(req *http.Request, requestId string, notifyResult *CouponNotify) error) http.Handler {
 	return http.HandlerFunc(func(res http.ResponseWriter, req *http.Request) {
 		var (
 			requestId    = Rand32()
@@ -22,7 +22,7 @@ func CouponNotifyHandler(cbFn func(requestId string, notifyResult *CouponNotify)
 				res.Write([]byte(err.Error()))
 				return
 			}
-			err = cbFn(requestId, notifyResult)
+			err = cbFn(req, requestId, notifyResult)
 			if err != nil {
 				res.Write([]byte(err.Error()))
 				return

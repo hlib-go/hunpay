@@ -1,85 +1,31 @@
-package main
+package ocwap
 
-import (
-	"crypto/md5"
-	"crypto/rand"
-	"encoding/base64"
-	"encoding/hex"
-	"fmt"
-	"io"
-	"strconv"
-	"sync"
-)
-
-//生成32位md5字串
-func GetMd5String(s string) string {
-	h := md5.New()
-	h.Write([]byte(s))
-	return hex.EncodeToString(h.Sum(nil))
-}
-
-//生成Guid字串
-func UniqueId() string {
-	b := make([]byte, 48)
-
-	if _, err := io.ReadFull(rand.Reader, b); err != nil {
-		return ""
-	}
-	return GetMd5String(base64.URLEncoding.EncodeToString(b))
-}
-
-func uniqueId() string {
-	b := make([]byte, 48)
-	_, err := rand.Read(b)
-	if err != nil {
-		return ""
-	}
-	return GetMd5String(base64.URLEncoding.EncodeToString(b))
-}
-
-func UUIDRand() string {
-	var b = make([]byte, 48)
-	if _, err := rand.Read(b); err != nil {
-		return ""
-	}
-	return fmt.Sprintf("%x", md5.Sum(b))
-}
-
-func main() {
-	var m sync.Map
-
-	go ran("n1", m)
-	go ran("n2", m)
-	go ran("n3", m)
-	go ran("n4", m)
-	go ran("n5", m)
-	go ran("n6", m)
-	go ran("n7", m)
-	go ran("n8", m)
-	go ran("n9", m)
-	go ran("n10", m)
-
-	for i := 0; i < 10000000; i++ {
-		a := UUIDRand()
-		if _, ok := m.Load(a); !ok {
-			m.Store(a, i)
-		} else {
-			fmt.Println("出现重复了: i = ", strconv.Itoa(i))
-			break
-		}
-	}
-	fmt.Println("完成...")
-}
-
-func ran(name string, m sync.Map) {
-	for i := 0; i < 1000000; i++ {
-		a := UUIDRand()
-		if _, ok := m.Load(a); !ok {
-			m.Store(a, i)
-		} else {
-			fmt.Println(name, "出现重复了: i = ", strconv.Itoa(i))
-			break
-		}
-	}
-	fmt.Println(name, " 完成...")
-}
+/*
+// 交易类型 txnType
+00 查询交易
+01：消费
+02：预授权
+03：预授权完成
+04：退货
+05: 圈存
+11：代收
+12：代付
+13：账单支付
+14：转账（保留）
+21：批量交易
+22：批量查询
+31：消费撤销
+32：预授权撤销
+33：预授权完成撤销
+71：余额查询
+72：实名认证-建立绑定关系
+73：账单查询
+74：解除绑定关系
+75：查询绑定关系
+76：文件传输
+77：发送短信验证码交易
+78：开通查询交易
+79：开通交易
+94：IC卡脚本通知
+95：查询更新加密公钥证书
+*/
