@@ -217,6 +217,6 @@ func mergeMap(bm map[string]string, pm map[string]string) map[string]string {
 }
 
 // 生成交易时间
-func txnTime() string {
+func TxnTime() string {
 	return time.Now().Format("20060102150405")
 }

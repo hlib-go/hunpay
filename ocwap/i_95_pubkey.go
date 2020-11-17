@@ -4,9 +4,9 @@ import "errors"
 
 // 文档：https://open.unionpay.com/tjweb/acproduct/APIList?acpAPIId=338&apiservId=453&version=V2.2&bussType=0
 
-// EncryptPubkey Pubkey全渠道平台敏感信息加密公钥查询
+// Pubkey 全渠道平台敏感信息加密公钥查询
 // 由业务系统缓存，缓存有效期12个小时，失效重新查询
-func EncryptPubkey(cfg *Config) (encryptPubKeyCert string, err error) {
+func Pubkey(cfg *Config) (encryptPubKeyCert string, err error) {
 	// 以下字段根据文档添加，值为约定固定值，都是必填字段
 	var bm = make(map[string]string)
 	bm["txnType"] = "95"
