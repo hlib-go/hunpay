@@ -1,4 +1,4 @@
-package ocwap
+package main
 
 import (
 	"crypto/x509"

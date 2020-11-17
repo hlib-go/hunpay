@@ -1,4 +1,4 @@
-package ocwap
+package main
 
 import (
 	"github.com/hlib-go/hunpay/ocwap"

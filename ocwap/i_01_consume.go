@@ -1,7 +1,12 @@
 package ocwap
 
 import (
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io/ioutil"
 	"net/http"
+	"net/url"
 	"strings"
 )
 
@@ -11,14 +16,14 @@ func Consume(cfg *Config, p *ConsumeParams, writer http.ResponseWriter) (err err
 	// 以下参数根据接口文档与示例填写
 	pm["txnType"] = "01"
 	pm["txnSubType"] = "01"
-	pm["bizType"] = "000201"
+	pm["bizType"] = BIZ_TYPE
 	pm["merId"] = cfg.MerId
 	pm["orderId"] = p.OrderId
 	pm["txnAmt"] = p.TxnAmt
 	pm["txnTime"] = p.TxnTime // 十四位字符串
-	pm["currencyCode"] = "156"
-	pm["accessType"] = "0"
-	pm["channelType"] = "08"
+	pm["currencyCode"] = CURRENCY_CODE
+	pm["accessType"] = ACCESS_TYPE
+	pm["channelType"] = CHANNEL_TYPE
 	// 如果存在卡号，打开链接时无填写银行卡号的步骤
 	if p.AccNo != "" {
 		pm["accType"] = "01"  //  账号类型，01：银行卡
@@ -63,4 +68,111 @@ func postForm(action string, items map[string]string) string {
 	html.WriteString("</div>")
 	html.WriteString("<script>document.getElementById('form').submit();</script>")
 	return html.String()
+}
+
+//ConsumeNotifyHandler 消费异步通知结果
+func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		var (
+			err       error
+			requestId = Rand32()
+			orderId   string
+			reqParams string
+			reqBody   string
+			resBody   string
+		)
+		defer func() {
+			fmt.Println(requestId, orderId, "全渠道消费通知 request.RequestURI：", request.RequestURI)
+			fmt.Println(requestId, orderId, "全渠道消费通知 reqParams：", reqParams)
+			fmt.Println(requestId, orderId, "全渠道消费通知 reqBody：", reqBody)
+			fmt.Println(requestId, orderId, "全渠道消费通知 resBody：", resBody)
+			if err != nil {
+				fmt.Println(requestId, "全渠道消费通知处理异常：", err.Error())
+				writer.WriteHeader(500)
+				writer.Write([]byte(err.Error()))
+				return
+			}
+			writer.Write([]byte(resBody))
+		}()
+
+		// 接收通知参数
+		rbytes, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			return
+		}
+		params, err := url.QueryUnescape(string(rbytes))
+		if err != nil {
+			return
+		}
+		reqParams = params
+
+		bmap := ParamsConvertMap(params)
+		orderId = bmap["orderId"]
+
+		// 验签
+		signValue := RsaSignSortMap(bmap)
+		err = RsaWithSha256Verify(signValue, bmap["signature"], bmap["signPubKeyCert"])
+		if err != nil {
+			return
+		}
+
+		// 验证返回码
+		if bmap["respCode"] != RESP_OK {
+			err = errors.New("UP" + bmap["respCode"] + ":" + bmap["respMsg"])
+			return
+		}
+
+		pbytes, err := json.Marshal(bmap)
+		if err != nil {
+			return
+		}
+		reqBody = string(pbytes)
+
+		var entity *ConsumeNotifyEntity
+		err = json.Unmarshal(pbytes, &entity)
+		if err != nil {
+			return
+		}
+
+		// 回调业务函数
+		err = cbFunc(entity)
+		if err != nil {
+			return
+		}
+		resBody = `{"respCode":"00","requestId":` + requestId + `,"orderId":"` + orderId + `"}`
+	})
+}
+
+type ConsumeNotifyEntity struct {
+	Version          string `json:"version"`
+	Encoding         string `json:"encoding"`
+	Signature        string `json:"signature"`
+	SignMethod       string `json:"signMethod"`
+	TxnType          string `json:"txnType"`
+	TxnSubType       string `json:"txnSubType"`
+	BizType          string `json:"bizType"`
+	AccessType       string `json:"accessType"`
+	AcqInsCode       string `json:"acqInsCode"`
+	MerId            string `json:"merId"`
+	OrderId          string `json:"orderId"`
+	TxnTime          string `json:"txnTime"`
+	TxnAmt           string `json:"txnAmt"`
+	CurrencyCode     string `json:"currencyCode"`
+	ReqReserved      string `json:"reqReserved"`
+	Reserved         string `json:"reserved"`
+	QueryId          string `json:"queryId"`
+	RespCode         string `json:"respCode"`
+	RespMsg          string `json:"respMsg"`
+	SettleAmt        string `json:"settleAmt"`
+	TraceNo          string `json:"traceNo"`
+	TraceTime        string `json:"traceTime"`
+	ExchangeDate     string `json:"exchangeDate"`
+	ExchangeRate     string `json:"exchangeRate"`
+	AccNo            string `json:"accNo"`
+	PayCardType      string `json:"payCardType"`
+	PayType          string `json:"payType"`
+	PayCardNo        string `json:"payCardNo"`
+	PayCardIssueName string `json:"payCardIssueName"`
+	BindId           string `json:"bindId"`
+	SignPubKeyCert   string `json:"signPubKeyCert"`
 }

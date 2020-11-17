@@ -3,39 +3,32 @@ package ocwap
 import (
 	"encoding/json"
 	"errors"
-	log "github.com/sirupsen/logrus"
+	"fmt"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 	"sort"
-	"strconv"
 	"strings"
 	"time"
-)
-
-type Err struct {
-	Code string `json:"errno"`
-	Msg  string `json:"error"`
-}
-
-func New(code, msg string) *Err {
-	return &Err{Code: code, Msg: msg}
-}
-
-var (
-	E00 = New("00", "成功")
 )
 
 // Method ：POST
 // ContentType ： application/x-www-form-urlencoded;charset=utf-8
 func Post(url, body string) (resBytes []byte, err error) {
 	contentType := "application/x-www-form-urlencoded;charset=utf-8"
-	/*defer func() {
-		fmt.Println("请求URL： POST " + url + "    " + contentType)
-		fmt.Println("请求报文：" + body)
-		fmt.Println("响应报文：" + string(resBytes))
-	}()*/
+	var (
+		begTime   = time.Now().UnixNano()
+		endTime   int64
+		requestId = Rand32()
+	)
+	defer func() {
+		fmt.Println(requestId, "ocwap请求URL：POST "+url+"    "+contentType)
+		fmt.Println(requestId, "ocwap请求报文", body)
+		fmt.Println(requestId, "ocwap响应报文", string(resBytes))
+		fmt.Println(requestId, "ocwap请求耗时", (endTime-begTime)/1e6, "ms")
+	}()
 	resp, err := http.Post(url, contentType, strings.NewReader(body))
+	endTime = time.Now().UnixNano()
 	if err != nil {
 		return
 	}
@@ -62,11 +55,11 @@ func Post(url, body string) (resBytes []byte, err error) {
 func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string]string, err error) {
 	var (
 		requestId = Rand32()
-		tlog      = log.WithField("requestId", requestId).WithField("sdk", "hunpay")
 		reqBody   string
 	)
 	defer func() {
-		tlog.WithField("requestBody", reqBody).Info("银联全渠道前台接口交易请求报文")
+		fmt.Println(requestId, "ocwap前端请求地址", url)
+		fmt.Println(requestId, "ocwap前端请求报文", reqBody)
 	}()
 	url = cfg.BaseServiceUrl + "/gateway/api/frontTransReq.do"
 	bm["version"] = VERSION
@@ -94,14 +87,8 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 // 后台接口交易
 func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
-		requestId = Rand32()
-		begTime   = time.Now().UnixNano()
-		tlog      = log.WithField("requestId", requestId).WithField("merId", conf.MerId).WithField("channel", "chunpay").WithField("txnType", bm["txnType"])
-		url       = conf.BaseServiceUrl + "/gateway/api/backTransReq.do"
-		reqBody   string
+		url = conf.BaseServiceUrl + "/gateway/api/backTransReq.do"
 	)
-	tlog.WithField("requestUrl", url).Info("银联全渠道后台接口交易请求URL")
-
 	bm["version"] = VERSION
 	bm["encoding"] = ENCODING
 	bm["signMethod"] = SIGN_METHOD      //01（表示采用RSA签名） HASH表示散列算法
@@ -118,11 +105,8 @@ func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string,
 	}
 	bm["signature"] = sign
 
-	requestBodyBytes, _ := json.Marshal(bm)
-	tlog.WithField("requestBody", string(requestBodyBytes)).Info("银联全渠道后台接口交易请求报文")
-
 	// 请求字符串
-	reqBody = MapConvertParams(bm)
+	reqBody := MapConvertParams(bm)
 
 	// HTTP POST
 	resBytes, err := Post(url, reqBody)
@@ -138,14 +122,15 @@ func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string,
 	signResString := RsaSignSortMap(resMap)
 
 	// 验证签名
-	err = RsaWithSha256Verify(signResString, resMap["signature"], conf.SignPubKeyCert)
+	err = RsaWithSha256Verify(signResString, resMap["signature"], resMap["signPubKeyCert"])
 	if err != nil {
 		return
 	}
 
-	responseBodyBytes, _ := json.Marshal(resMap)
-	endTime := time.Now().UnixNano()
-	tlog.WithField("milliseconds", strconv.FormatInt((endTime-begTime)/1e6, 10)).WithField("responseBody", string(responseBodyBytes)).Info("银联全渠道后台接口交易响应报文")
+	// 验证响应状态码
+	if resMap["respCode"] != RESP_OK {
+		err = errors.New("UP" + resMap["respCode"] + ":" + resMap["respMsg"])
+	}
 	return
 }
 
