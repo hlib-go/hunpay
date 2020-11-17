@@ -1,6 +1,7 @@
 package ocwap
 
 import (
+	"github.com/hlib-go/hunpay/ocwap"
 	"testing"
 	"time"
 )
@@ -35,7 +36,7 @@ Kb9w9k6wXTjk147jImhBinG4DL0=
 -----END RSA PRIVATE KEY-----`
 
 func TestRsaWithSha256Sign(t *testing.T) {
-	sign, err := RsaWithSha256Sign("123", pemPriKey)
+	sign, err := ocwap.RsaWithSha256Sign("123", pemPriKey)
 	if err != nil {
 		t.Error(err)
 	}
@@ -48,7 +49,7 @@ func TestRsaWithSha256Sign(t *testing.T) {
 func TestRsaWithSha256Sign2(t *testing.T) {
 	beg := time.Now().UnixNano()
 	for i := 0; i < 1000; i++ {
-		_, err := RsaWithSha256Sign("123", pemPriKey)
+		_, err := ocwap.RsaWithSha256Sign("123", pemPriKey)
 		if err != nil {
 			t.Error(err)
 		}
