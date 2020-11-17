@@ -8,9 +8,9 @@ func Query(cfg *Config, orderId string) (result *QueryResult, err error) {
 	// 以下参数根据接口文档与示例填写
 	pm["txnType"] = "00"
 	pm["txnSubType"] = "00"
-	pm["bizType"] = "000201"
-	pm["accessType"] = "0"
-	pm["txnTime"] = txnTime()
+	pm["bizType"] = BIZ_TYPE
+	pm["accessType"] = ACCESS_TYPE
+	pm["txnTime"] = TxnTime()
 	pm["orderId"] = orderId
 
 	err = BackTransReqUnmarshal(cfg, pm, &result)

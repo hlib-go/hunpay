@@ -2,11 +2,9 @@ package ocwap
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io/ioutil"
 	"net/http"
-	"net/url"
 	"strings"
 )
 
@@ -47,7 +45,7 @@ func Consume(cfg *Config, p *ConsumeParams, writer http.ResponseWriter) (err err
 
 type ConsumeParams struct {
 	AccNo       string `json:"accNo" description:"非必填,银行卡号，用于帮用户自动填写卡号"`
-	OrderId     string `json:"orderId" description:"必填，业务系统订单号，不能重复"`
+	OrderId     string `json:"orderId" description:"必填，业务系统订单号，不能重复，长度8到40，不能存在符号"`
 	TxnAmt      string `json:"txnAmt" description:"必填，交易金额，单位分"`
 	FrontUrl    string `json:"frontUrl" description:"必填，支付完成后跳转的页面"`
 	BackUrl     string `json:"backUrl" description:"必填，后台接受支付结果通知URL"`
@@ -70,6 +68,52 @@ func postForm(action string, items map[string]string) string {
 	return html.String()
 }
 
+// 消费同步通知结果（页面跳转）
+func ConsumeNotifyFrontHandler(cbFunc func(writer http.ResponseWriter, request *http.Request, entity *ConsumeNotifyEntity, err error)) http.Handler {
+	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
+		var (
+			entity    *ConsumeNotifyEntity
+			err       error
+			requestId = Rand32()
+			reqParams string
+			reqBody   string
+		)
+		defer func() {
+			fmt.Println(requestId, "全渠道消费前端通知 request.RequestURI：", request.RequestURI)
+			fmt.Println(requestId, "全渠道消费前端通知 reqParams：", reqParams)
+			fmt.Println(requestId, "全渠道消费前端通知 reqBody JSON：", reqBody)
+			if err != nil {
+				fmt.Println(requestId, "全渠道消费前端通知处理异常：", err.Error())
+			}
+			cbFunc(writer, request, entity, err)
+		}()
+
+		// 接收通知参数
+		rbytes, err := ioutil.ReadAll(request.Body)
+		if err != nil {
+			return
+		}
+		reqParams = string(rbytes)
+
+		// 验证签名与返回码
+		bmap, err := NotifyVerify(reqParams)
+		if err != nil {
+			return
+		}
+
+		pbytes, err := json.Marshal(bmap)
+		if err != nil {
+			return
+		}
+		reqBody = string(pbytes)
+
+		err = json.Unmarshal(pbytes, &entity)
+		if err != nil {
+			return
+		}
+	})
+}
+
 //ConsumeNotifyHandler 消费异步通知结果
 func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
@@ -84,8 +128,8 @@ func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handle
 		defer func() {
 			fmt.Println(requestId, orderId, "全渠道消费通知 request.RequestURI：", request.RequestURI)
 			fmt.Println(requestId, orderId, "全渠道消费通知 reqParams：", reqParams)
-			fmt.Println(requestId, orderId, "全渠道消费通知 reqBody：", reqBody)
-			fmt.Println(requestId, orderId, "全渠道消费通知 resBody：", resBody)
+			fmt.Println(requestId, orderId, "全渠道消费通知 reqBody JSON：", reqBody)
+			fmt.Println(requestId, orderId, "全渠道消费通知 resBody JSON：", resBody)
 			if err != nil {
 				fmt.Println(requestId, "全渠道消费通知处理异常：", err.Error())
 				writer.WriteHeader(500)
@@ -100,25 +144,10 @@ func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handle
 		if err != nil {
 			return
 		}
-		params, err := url.QueryUnescape(string(rbytes))
+		reqParams = string(rbytes)
+		// 验证签名与返回码
+		bmap, err := NotifyVerify(reqParams)
 		if err != nil {
-			return
-		}
-		reqParams = params
-
-		bmap := ParamsConvertMap(params)
-		orderId = bmap["orderId"]
-
-		// 验签
-		signValue := RsaSignSortMap(bmap)
-		err = RsaWithSha256Verify(signValue, bmap["signature"], bmap["signPubKeyCert"])
-		if err != nil {
-			return
-		}
-
-		// 验证返回码
-		if bmap["respCode"] != RESP_OK {
-			err = errors.New("UP" + bmap["respCode"] + ":" + bmap["respMsg"])
 			return
 		}
 
@@ -146,8 +175,6 @@ func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handle
 type ConsumeNotifyEntity struct {
 	Version          string `json:"version"`
 	Encoding         string `json:"encoding"`
-	Signature        string `json:"signature"`
-	SignMethod       string `json:"signMethod"`
 	TxnType          string `json:"txnType"`
 	TxnSubType       string `json:"txnSubType"`
 	BizType          string `json:"bizType"`
@@ -174,5 +201,4 @@ type ConsumeNotifyEntity struct {
 	PayCardNo        string `json:"payCardNo"`
 	PayCardIssueName string `json:"payCardIssueName"`
 	BindId           string `json:"bindId"`
-	SignPubKeyCert   string `json:"signPubKeyCert"`
 }

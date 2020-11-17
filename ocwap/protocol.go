@@ -14,7 +14,7 @@ import (
 
 // Method ：POST
 // ContentType ： application/x-www-form-urlencoded;charset=utf-8
-func Post(url, body string) (resBytes []byte, err error) {
+func Post(serviceUrl, body string) (resBytes []byte, err error) {
 	contentType := "application/x-www-form-urlencoded;charset=utf-8"
 	var (
 		begTime   = time.Now().UnixNano()
@@ -22,12 +22,12 @@ func Post(url, body string) (resBytes []byte, err error) {
 		requestId = Rand32()
 	)
 	defer func() {
-		fmt.Println(requestId, "ocwap请求URL：POST "+url+"    "+contentType)
+		fmt.Println(requestId, "ocwap请求URL：POST "+serviceUrl+"    "+contentType)
 		fmt.Println(requestId, "ocwap请求报文", body)
-		fmt.Println(requestId, "ocwap响应报文", string(resBytes))
+		fmt.Println(requestId, "ocwap响应报文", url.QueryEscape(string(resBytes)))
 		fmt.Println(requestId, "ocwap请求耗时", (endTime-begTime)/1e6, "ms")
 	}()
-	resp, err := http.Post(url, contentType, strings.NewReader(body))
+	resp, err := http.Post(serviceUrl, contentType, strings.NewReader(body))
 	endTime = time.Now().UnixNano()
 	if err != nil {
 		return

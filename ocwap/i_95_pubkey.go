@@ -16,7 +16,7 @@ func Pubkey(cfg *Config) (encryptPubKeyCert string, err error) {
 	bm["accessType"] = ACCESS_TYPE
 	bm["certType"] = "01" // 证书类型固定值 01：敏感信息加密公钥
 	bm["orderId"] = Rand32()
-	bm["txnTime"] = txnTime()
+	bm["txnTime"] = TxnTime()
 
 	respMap, err := BackTransReq(cfg, bm)
 	if err != nil {
