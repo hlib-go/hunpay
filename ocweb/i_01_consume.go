@@ -22,6 +22,7 @@ func Consume(cfg *Config, p *ConsumeParams, writer http.ResponseWriter) (err err
 	pm["currencyCode"] = CURRENCY_CODE
 	pm["accessType"] = ACCESS_TYPE
 	pm["channelType"] = CHANNEL_TYPE
+	pm["defaultPayType"] = "0201" // 网银支付 0004：储值卡支付  0005：IC卡支付  0201：网银支付  0404：互联网订单手机支付
 	// 如果存在卡号，打开链接时无填写银行卡号的步骤
 	if p.AccNo != "" {
 		pm["accType"] = "01"  //  账号类型，01：银行卡
