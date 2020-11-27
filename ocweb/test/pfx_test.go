@@ -4,7 +4,7 @@ import (
 	"crypto/x509"
 	"encoding/pem"
 	"fmt"
-	"github.com/hlib-go/hunpay/ocwap"
+	"github.com/hlib-go/hunpay/ocweb"
 	"golang.org/x/crypto/pkcs12"
 	"io/ioutil"
 	"log"
@@ -33,7 +33,7 @@ func TestPfxToBase64(t *testing.T) {
 	})
 
 	// 计算签名
-	sign, err := ocwap.RsaWithSha256Sign(value, string(pemBytes))
+	sign, err := ocweb.RsaWithSha256Sign(value, string(pemBytes))
 	if err != nil {
 		t.Error(err)
 		return
@@ -67,7 +67,7 @@ func TestPfxToPem(t *testing.T) {
 	})
 
 	// 计算签名
-	sign, err := ocwap.RsaWithSha256Sign(value, string(pemBytes))
+	sign, err := ocweb.RsaWithSha256Sign(value, string(pemBytes))
 	if err != nil {
 		t.Error(err)
 		return
