@@ -54,15 +54,15 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 	case "GCUP06038":
 		// Coupon download failed due to useId is limited.[GCUP06038]
 		err = ErrNew(resp.Resp, "超过限制次数")
-		return
 	case "GCUP06007":
 		// Coupon download rules match failed.[GCUP06007]
 		err = ErrNew(resp.Resp, "规则验证失败，请确认在有效时间内")
-		return
 	case "GCUP07056":
 		//Coupon download failed due to cityId is invalid.[GCUP07056]
 		err = ErrNew(resp.Resp, "Coupon download failed due to cityId is invalid")
-		return
+	case "GCUP07053":
+		// Coupon download failed due to no cardNo is invalid.[GCUP07053]
+		err = ErrNew(resp.Resp, "领取不成功，未绑定相应的卡.[GCUP07053]")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
