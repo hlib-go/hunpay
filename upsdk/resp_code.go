@@ -97,7 +97,7 @@ func (e *Err) NewMsgF(args ...interface{}) *Err {
 }
 
 func (e *Err) Error() string {
-	return e.Code + ":UP" + e.Msg
+	return e.Msg + ".[" + e.Code + "]"
 }
 
 func (e *Err) JsonMarshal() []byte {

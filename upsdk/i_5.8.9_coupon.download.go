@@ -62,7 +62,7 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 		err = ErrNew(resp.Resp, "Coupon download failed due to cityId is invalid")
 	case "GCUP07053":
 		// Coupon download failed due to no cardNo is invalid.[GCUP07053]
-		err = ErrNew(resp.Resp, "领取不成功，未绑定相应的卡.[GCUP07053]")
+		err = ErrNew(resp.Resp, "领取不成功，未绑定相应的卡")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
