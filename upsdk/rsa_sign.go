@@ -13,7 +13,7 @@ import (
 	"strings"
 )
 
-// 云闪付 Rsa 验签
+// 云闪付 Rsa 私钥签名
 func UpRsaSign(params *BodyMap, priKey string, containNilVal bool) (sign string, err error) {
 	if priKey == "" {
 		return "", errors.New("ERROR:云闪付接口 RSA Sign privateKey 私钥配置不能为空")
@@ -37,6 +37,42 @@ func RsaSign(value, priKey string) (sign string, err error) {
 		return
 	}
 	sign = base64.StdEncoding.EncodeToString(b)
+	return
+}
+
+// 云闪付 Rsa 公钥验签
+func UpRsaVerify(sign string, params *BodyMap, pubKey string, containNilVal bool) (ok bool, err error) {
+	if pubKey == "" {
+		return false, errors.New("ERROR:云闪付接口 RSA Sign upPublicKey 公钥未配置")
+	}
+	value := rsaSignSortMap(params, containNilVal)
+	return RsaVerify(sign, value, pubKey)
+}
+
+func RsaVerify(sign, value, pubKey string) (ok bool, err error) {
+	signBytes, err := base64.StdEncoding.DecodeString(sign)
+	if err != nil {
+		err = errors.New("验签错误，Base64解码签名出错 " + err.Error())
+		return
+	}
+	p, _ := pem.Decode([]byte(pubKey))
+	if p == nil {
+		err = errors.New("验签错误，PemDecodePublicKey Error")
+		return
+	}
+	publicKey, err := x509.ParsePKIXPublicKey(p.Bytes)
+	if err != nil {
+		err = errors.New("验签错误，ParsePKIXPublicKey " + err.Error())
+		return
+	}
+	hash := sha256.New()
+	hash.Write([]byte(value))
+	shaBytes := hash.Sum(nil)
+	err = rsa.VerifyPKCS1v15(publicKey.(*rsa.PublicKey), crypto.SHA256, shaBytes, signBytes)
+	if err != nil {
+		err = errors.New("SIGN_ERROR " + err.Error())
+		return
+	}
 	return
 }
 

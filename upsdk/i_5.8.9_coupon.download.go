@@ -86,11 +86,11 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 }
 
 type CouponDownloadParams struct {
-	TransSeqId string
-	TransTs    string
+	TransSeqId string // 交易流水
+	TransTs    string // 请求日期
 	CouponId   string
 	CouponNum  int64
-	Mobile     string // 三选一
+	Mobile     string //Mobile CardNo OpenId 三选一
 	CardNo     string
 	OpenId     string
 }

@@ -1,7 +1,6 @@
 package upsdk
 
-/* 银联云闪付接口配置 */
-
+// 银联云闪付接口配置
 type Config struct {
 	// https://open.95516.com/open/access/1.0
 	BaseServiceUrl string `json:"baseServiceUrl"  description:"接口链接前缀，不带'/'"`
