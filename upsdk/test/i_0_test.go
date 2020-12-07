@@ -40,7 +40,7 @@ EzgxZuLlRIyWS2wnyxoIneRfKEoXAnaeZTho0jYBqFsKsButRIVP1DLlzS99NCi0
 N2MTKkYWZZbs2kFin7sB92Xy3QYoHeru4fZK3MdBRj85e17n9MBfVCnGTq6cbxbm
 MG7BFjV7aoR/h2bkkVv6mxw=
 -----END PRIVATE KEY-----`,
-}, "100002")
+})
 
 func init() {
 	c.GetBackendToken = func(refresh bool) string {

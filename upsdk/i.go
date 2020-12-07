@@ -19,14 +19,10 @@ type Unionpay struct {
 	Config          *Config
 	GetBackendToken func(refresh bool) string
 	GetFrontToken   func(refresh bool) string
-
-	MchId string
-	log   *log.Entry
 }
 
-func New(conf *Config, mchId string) *Unionpay {
-	up := &Unionpay{Config: conf, MchId: mchId}
-	up.log = log.WithField("mchId", up.MchId)
+func New(conf *Config) *Unionpay {
+	up := &Unionpay{Config: conf}
 	return up
 }
 
@@ -48,7 +44,7 @@ func (c *Unionpay) Post(path string, bodyMap *BodyMap) (respBody *RespBody, err 
 		fmt.Println("响应报文：" + resBody)
 	}()
 
-	plog := c.log.WithField("path", path)
+	plog := log.WithField("path", path)
 	plog.WithField("serviceUrl", c.Config.BaseServiceUrl).WithField("appid", c.Config.AppId).Info("云闪付请求URL")
 	bodyBytes, _ := json.Marshal(bodyMap)
 	reqBody = string(bodyBytes)
@@ -76,7 +72,7 @@ func (c *Unionpay) Post(path string, bodyMap *BodyMap) (respBody *RespBody, err 
 }
 
 func (c *Unionpay) Call(path string, bm *BodyMap, result interface{}) (err error) {
-	plog := c.log.WithField("path", path)
+	plog := log.WithField("path", path)
 	begmillisecond := time.Now().UnixNano() / 1e6
 	//计算签名
 	signature := bm.Sha256Sign(c.Config.Secret)
