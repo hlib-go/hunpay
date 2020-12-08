@@ -77,14 +77,11 @@ func CouponNotifyHandler(getConfig func(appid string) (cfg *Config, err error), 
 		}
 
 		// 验证签名
-		/*ok, err := UpRsaVerify(signature, bmap, cfg.UpPublicKey, false)
+		err = UpRsaVerify(signature, bmap, cfg.UpPublicKey, true)
 		if err != nil {
 			return
 		}
-		if !ok {
-			err = errors.New("验签失败")
-			return
-		}*/
+
 		err = json.Unmarshal(pbytes, &notifyResult)
 		if err != nil {
 			return

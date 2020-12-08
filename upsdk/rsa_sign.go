@@ -41,15 +41,15 @@ func RsaSign(value, priKey string) (sign string, err error) {
 }
 
 // 云闪付 Rsa 公钥验签
-func UpRsaVerify(sign string, params *BodyMap, pubKey string, containNilVal bool) (ok bool, err error) {
+func UpRsaVerify(sign string, params *BodyMap, pubKey string, containNilVal bool) (err error) {
 	if pubKey == "" {
-		return false, errors.New("ERROR:云闪付接口 RSA Sign upPublicKey 公钥未配置")
+		return errors.New("ERROR:云闪付接口 RSA Sign upPublicKey 公钥未配置")
 	}
 	value := rsaSignSortMap(params, containNilVal)
 	return RsaVerify(sign, value, pubKey)
 }
 
-func RsaVerify(sign, value, pubKey string) (ok bool, err error) {
+func RsaVerify(sign, value, pubKey string) (err error) {
 	signBytes, err := base64.StdEncoding.DecodeString(sign)
 	if err != nil {
 		err = errors.New("验签错误，Base64解码签名出错 " + err.Error())
