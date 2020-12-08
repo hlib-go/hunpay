@@ -127,7 +127,7 @@ const (
 	OPERA_TP_03 OperaTp = "03" // 返还优惠券
 	OPERA_TP_04 OperaTp = "04" // 优惠券无操作（如：部分退货等）
 	OPERA_TP_05 OperaTp = "05" // 优惠券删除
-	OPERA_TP_06 OperaTp = "05" // 优惠券过期
+	OPERA_TP_06 OperaTp = "06" // 优惠券过期
 )
 
 type TransTp string
