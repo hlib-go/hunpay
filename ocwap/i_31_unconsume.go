@@ -3,7 +3,7 @@ package ocwap
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -73,12 +73,12 @@ func UnConsumeNotifyHandler(cbFunc func(o *UnConsumeNotifyEntity) error) http.Ha
 			resBody   string
 		)
 		defer func() {
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 reqParams：", reqParams)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 reqBody：", reqBody)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 resBody：", resBody)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 reqParams：", reqParams)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 reqBody：", reqBody)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 resBody：", resBody)
 			if err != nil {
-				fmt.Println(requestId, "全渠道消费通知处理异常：", err.Error())
+				log.Error(requestId, "全渠道消费通知处理异常：", err.Error())
 				writer.WriteHeader(500)
 				writer.Write([]byte(err.Error()))
 				return

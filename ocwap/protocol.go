@@ -3,7 +3,7 @@ package ocwap
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -22,10 +22,10 @@ func Post(serviceUrl, body string) (resBytes []byte, err error) {
 		requestId = Rand32()
 	)
 	defer func() {
-		fmt.Println(requestId, "ocwap请求URL：POST "+serviceUrl+"    "+contentType)
-		fmt.Println(requestId, "ocwap请求报文", body)
-		fmt.Println(requestId, "ocwap响应报文", url.QueryEscape(string(resBytes)))
-		fmt.Println(requestId, "ocwap请求耗时", (endTime-begTime)/1e6, "ms")
+		log.Info(requestId, "ocwap请求URL：POST "+serviceUrl+"    "+contentType)
+		log.Info(requestId, "ocwap请求报文", body)
+		log.Info(requestId, "ocwap响应报文", url.QueryEscape(string(resBytes)))
+		log.Info(requestId, "ocwap请求耗时", (endTime-begTime)/1e6, "ms")
 	}()
 	resp, err := http.Post(serviceUrl, contentType, strings.NewReader(body))
 	endTime = time.Now().UnixNano()
@@ -58,8 +58,8 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 		reqBody   string
 	)
 	defer func() {
-		fmt.Println(requestId, "ocwap前端请求地址", url)
-		fmt.Println(requestId, "ocwap前端请求报文", reqBody)
+		log.Info(requestId, "ocwap前端请求地址", url)
+		log.Info(requestId, "ocwap前端请求报文", reqBody)
 	}()
 	url = cfg.BaseServiceUrl + "/gateway/api/frontTransReq.do"
 	bm["version"] = VERSION

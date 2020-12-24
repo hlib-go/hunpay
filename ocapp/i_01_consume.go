@@ -2,7 +2,7 @@ package ocapp
 
 import (
 	"encoding/json"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 )
@@ -71,12 +71,12 @@ func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handle
 			resBody   string
 		)
 		defer func() {
-			fmt.Println(requestId, orderId, "全渠道消费通知 request.RequestURI：", request.RequestURI)
-			fmt.Println(requestId, orderId, "全渠道消费通知 reqParams：", reqParams)
-			fmt.Println(requestId, orderId, "全渠道消费通知 reqBody JSON：", reqBody)
-			fmt.Println(requestId, orderId, "全渠道消费通知 resBody JSON：", resBody)
+			log.Info(requestId, orderId, "全渠道消费通知 request.RequestURI：", request.RequestURI)
+			log.Info(requestId, orderId, "全渠道消费通知 reqParams：", reqParams)
+			log.Info(requestId, orderId, "全渠道消费通知 reqBody JSON：", reqBody)
+			log.Info(requestId, orderId, "全渠道消费通知 resBody JSON：", resBody)
 			if err != nil {
-				fmt.Println(requestId, "全渠道消费通知处理异常：", err.Error())
+				log.Warn(requestId, "全渠道消费通知处理异常：", err.Error())
 				writer.WriteHeader(500)
 				writer.Write([]byte(err.Error()))
 				return
