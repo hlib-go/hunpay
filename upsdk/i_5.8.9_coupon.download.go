@@ -66,6 +66,9 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 	case "GCUP06045":
 		// Coupon download failed due to there has no coupon left.[GCUP06045]
 		err = ErrNew(resp.Resp, "该优惠券已达到领用上限")
+	case "GCUP07052":
+		// Coupon download failed due to acct is not samename.[GCUP07052]
+		err = ErrNew(resp.Resp, "云闪付没有绑卡或所绑卡不同名")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
