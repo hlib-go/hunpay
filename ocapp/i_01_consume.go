@@ -21,6 +21,9 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 	pm["currencyCode"] = CURRENCY_CODE
 	pm["accessType"] = ACCESS_TYPE
 	pm["channelType"] = CHANNEL_TYPE
+	if p.AccNo != "" {
+		pm["accNo"] = p.AccNo // 银行卡号
+	}
 	//pm["frontUrl"] = p.FrontUrl // 前台返回商户结果时使用，前台类交易需上送
 	pm["backUrl"] = p.BackUrl //后台返回商户结果时使用，如上送，则发送商户后台交易结果通知，不支持换行符等不可见字符
 	if p.ReqReserved != "" {
@@ -35,10 +38,9 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 }
 
 type ConsumeParams struct {
-	//AccNo       string `json:"accNo" description:"非必填,银行卡号，用于帮用户自动填写卡号"`
-	OrderId string `json:"orderId" description:"必填，业务系统订单号，不能重复，长度8到40，不能存在符号"`
-	TxnAmt  string `json:"txnAmt" description:"必填，交易金额，单位分"`
-	//FrontUrl    string `json:"frontUrl" description:"必填，支付完成后跳转的页面"`
+	AccNo       string `json:"accNo" description:"非必填,银行卡号，用于帮用户自动填写卡号"`
+	OrderId     string `json:"orderId" description:"必填，业务系统订单号，不能重复，长度8到40，不能存在符号"`
+	TxnAmt      string `json:"txnAmt" description:"必填，交易金额，单位分"`
 	BackUrl     string `json:"backUrl" description:"必填，后台接受支付结果通知URL"`
 	TxnTime     string `json:"txnTime" description:"必填，交易时间 ,14位 yyyyMMddHHmmss  商户代码merId、商户订单号orderId、订单发送时间txnTime三要素唯一确定一笔交易。"`
 	ReqReserved string `json:"reqReserved" description:"非必填，请求方保留域,通知原样返回"`
