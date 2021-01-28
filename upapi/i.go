@@ -27,17 +27,17 @@ func Post(c *Config, path string, bodyMap *BodyMap) (respBody *RespBody, err err
 		resBody string
 	)
 	defer func() {
-		fmt.Println("请求URL：" + c.BaseServiceUrl + path)
+		fmt.Println("请求URL：" + c.ServiceUrl + path)
 		fmt.Println("请求报文：" + reqBody)
 		fmt.Println("响应报文：" + resBody)
 	}()
 
 	plog := log.WithField("path", path)
-	plog.WithField("serviceUrl", c.BaseServiceUrl).WithField("appid", c.AppId).Info("云闪付请求URL")
+	plog.WithField("serviceUrl", c.ServiceUrl).WithField("appid", c.AppId).Info("云闪付请求URL")
 	bodyBytes, _ := json.Marshal(bodyMap)
 	reqBody = string(bodyBytes)
 	plog.WithField("requestBody", reqBody).Info("云闪付请求报文")
-	resp, err := http.Post(c.BaseServiceUrl+path, "application/json", strings.NewReader(reqBody))
+	resp, err := http.Post(c.ServiceUrl+path, "application/json", strings.NewReader(reqBody))
 	if err != nil {
 		return
 	}
@@ -71,7 +71,7 @@ func Call(c *Config, path string, bm *BodyMap, result interface{}) (err error) {
 		return
 	}
 	plog.WithField("requestBody", string(body)).Info("云闪付请求报文")
-	resp, err := http.Post(c.BaseServiceUrl+path, "application/json", strings.NewReader(string(body)))
+	resp, err := http.Post(c.ServiceUrl+path, "application/json", strings.NewReader(string(body)))
 	if err != nil {
 		return
 	}

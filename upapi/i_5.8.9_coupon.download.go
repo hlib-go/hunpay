@@ -69,6 +69,9 @@ func CouponDownload(c *Config, p *CouponDownloadParams) (r *CouponDownloadResult
 	case "GCUP07052":
 		// Coupon download failed due to acct is not samename.[GCUP07052]
 		err = ErrNew(resp.Resp, "云闪付没有绑卡或所绑卡不同名")
+	case "GCUP06036":
+		// Coupon download failed due to cardNo is limited.[GCUP06036]
+		err = ErrNew(resp.Resp, "卡号受限无法领券")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
