@@ -13,7 +13,7 @@ import (
 // 消费测试
 func main() {
 	// https://msd.himkt.cn/work/consume?orderId=T0000001&txnAmt=1&accNo=6251211100976741
-	// https://ms.himkt.cn/mswork/consume?orderId=T0000002&txnAmt=1&accNo=6214830213065526
+	// https://ms.himkt.cn/mswork/consume?orderId=T0000002&txnAmt=1&accNo=6214830213065526   ，云闪付扫码方式访问此链接，直接调起控件支付
 	// 消费，跳转云闪付控件支付
 	http.HandleFunc("/consume", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
