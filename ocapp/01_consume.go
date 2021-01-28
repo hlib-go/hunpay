@@ -33,7 +33,6 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 	if err != nil {
 		return
 	}
-
 	return
 }
 

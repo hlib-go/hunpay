@@ -1,7 +1,6 @@
 package ocapp
 
 // 银联全渠道接口通信协议，以下内容从银联全渠道文档获取
-// 手机支付-WAP页面支付
 const (
 	VERSION             = "5.1.0"                //银联签名版本：5.1.0
 	ENCODING            = "UTF-8"                //编码
@@ -16,15 +15,15 @@ const (
 
 // 银联商户入网配置参数
 type Config struct {
-	BaseServiceUrl  string // 服务域名
-	MerId           string // 银联商户号
-	MerPrivateKey   string // 商户申请的证书私钥，，申请的是pfx格式，需要提取pem格式私钥 ，pfx提取的公钥需要上传到银联商家管理平台，具体步骤参考银联文档
-	MerSerialNumber string // 证书序列号，可通过pfx提取序列号
+	ServiceUrl      string `json:"serviceUrl"`      // 服务域名
+	MerId           string `json:"merId"`           // 银联商户号
+	MerPrivateKey   string `json:"merPrivateKey"`   // 商户申请的证书私钥，，申请的是pfx格式，需要提取pem格式私钥 ，pfx提取的公钥需要上传到银联商家管理平台，具体步骤参考银联文档
+	MerSerialNumber string `json:"merSerialNumber"` // 证书序列号，可通过pfx提取序列号
 }
 
-func NewConfig(baseServiceUrl, merId, merPrivateKey, merSerialNumber string) *Config {
+func NewConfig(serviceUrl, merId, merPrivateKey, merSerialNumber string) *Config {
 	return &Config{
-		BaseServiceUrl:  baseServiceUrl,
+		ServiceUrl:      serviceUrl,
 		MerId:           merId,
 		MerPrivateKey:   merPrivateKey,
 		MerSerialNumber: merSerialNumber,

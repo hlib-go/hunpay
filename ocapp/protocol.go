@@ -3,7 +3,6 @@ package ocapp
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
@@ -23,10 +22,10 @@ func Post(serviceUrl, body string) (resBytes []byte, err error) {
 		requestId = Rand32()
 	)
 	defer func() {
-		log.Info(requestId, "ocwap请求URL：POST "+serviceUrl+"    "+contentType)
-		log.Info(requestId, "ocwap请求报文", body)
-		log.Info(requestId, "ocwap响应报文", url.QueryEscape(string(resBytes)))
-		log.Info(requestId, "ocwap请求耗时", (endTime-begTime)/1e6, "ms")
+		log.Info(requestId, " ocwap请求URL：POST "+serviceUrl+"    "+contentType)
+		log.Info(requestId, " ocwap请求报文 ", body)
+		log.Info(requestId, " ocwap响应报文 ", url.QueryEscape(string(resBytes)))
+		log.Info(requestId, " ocwap请求耗时 ", (endTime-begTime)/1e6, "ms")
 	}()
 	resp, err := http.Post(serviceUrl, contentType, strings.NewReader(body))
 	endTime = time.Now().UnixNano()
@@ -59,10 +58,10 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 		reqBody   string
 	)
 	defer func() {
-		fmt.Println(requestId, "ocwap前端请求地址", url)
-		fmt.Println(requestId, "ocwap前端请求报文", reqBody)
+		log.Info(requestId, " ocwap前端请求地址 ", url)
+		log.Info(requestId, " ocwap前端请求报文 ", reqBody)
 	}()
-	url = cfg.BaseServiceUrl + "/gateway/api/frontTransReq.do"
+	url = cfg.ServiceUrl + "/gateway/api/frontTransReq.do"
 	bm["version"] = VERSION
 	bm["encoding"] = ENCODING
 	bm["signMethod"] = SIGN_METHOD
@@ -88,7 +87,7 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 // 后台接口交易
 func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
-		url = conf.BaseServiceUrl + "/gateway/api/backTransReq.do"
+		url = conf.ServiceUrl + "/gateway/api/backTransReq.do"
 	)
 	bm["version"] = VERSION
 	bm["encoding"] = ENCODING
@@ -155,7 +154,7 @@ func BackTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{}
 // 手机支付控件（含安卓Pay）
 func AppTransReq(conf *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
-		url = conf.BaseServiceUrl + "/gateway/api/appTransReq.do"
+		url = conf.ServiceUrl + "/gateway/api/appTransReq.do"
 	)
 	bm["version"] = VERSION
 	bm["encoding"] = ENCODING
@@ -223,7 +222,7 @@ func AppTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{})
 // queryTrans 查询交易
 func QueryTrans(cfg *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
-		url = cfg.BaseServiceUrl + "/gateway/api/queryTrans.do"
+		url = cfg.ServiceUrl + "/gateway/api/queryTrans.do"
 	)
 	bm["version"] = VERSION
 	bm["encoding"] = ENCODING

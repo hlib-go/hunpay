@@ -3,13 +3,13 @@ package ocapp
 import (
 	"encoding/json"
 	"errors"
-	"fmt"
+	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
 )
 
-// 消费撤销接口
+// UnConsume 消费撤销接口
 func UnConsume(cfg *Config, p *UnConsumeParams) (result *UnConsumeResult, err error) {
 	var pm = make(map[string]string)
 	// 以下参数根据接口文档与示例填写
@@ -73,12 +73,12 @@ func UnConsumeNotifyHandler(cbFunc func(o *UnConsumeNotifyEntity) error) http.Ha
 			resBody   string
 		)
 		defer func() {
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 reqParams：", reqParams)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 reqBody：", reqBody)
-			fmt.Println(requestId, orderId, "全渠道消费撤销通知 resBody：", resBody)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 reqParams：", reqParams)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 reqBody：", reqBody)
+			log.Info(requestId, orderId, "全渠道消费撤销通知 resBody：", resBody)
 			if err != nil {
-				fmt.Println(requestId, "全渠道消费通知处理异常：", err.Error())
+				log.Warn(requestId, "全渠道消费通知处理异常：", err.Error())
 				writer.WriteHeader(500)
 				writer.Write([]byte(err.Error()))
 				return

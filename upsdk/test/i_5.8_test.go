@@ -43,9 +43,9 @@ func Test_CouponDownload(t *testing.T) {
 	r, err := c.CouponDownload(&upsdk.CouponDownloadParams{
 		TransSeqId: upsdk.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3102020103047596",
+		CouponId:   "3102021012562511",
 		CouponNum:  1,
-		Mobile:     "15657477628",
+		Mobile:     "13611703040",
 	})
 	if err != nil {
 		t.Error(err.Error())
