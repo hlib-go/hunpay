@@ -9,6 +9,6 @@ type Config struct {
 	UpPublicKey    string `json:"upPublicKey,omitempty" description:"（银联方）使用openssl生成，base64形式输出"`
 	MchPrivateKey  string `json:"mchPrivateKey" description:"接入商户证书私钥"`
 
-	RefreshFrontToken   func() // frontToken失效时调用此函数，业务实现刷新逻辑
-	RefreshBackendToken func() // backendToken失效时调用此函数，业务实现刷新逻辑
+	RefreshFrontToken   func() `json:"-"` // frontToken失效时调用此函数，业务实现刷新逻辑
+	RefreshBackendToken func() `json:"-"` // backendToken失效时调用此函数，业务实现刷新逻辑
 }
