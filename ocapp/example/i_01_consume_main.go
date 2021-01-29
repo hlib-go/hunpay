@@ -8,6 +8,7 @@ import (
 	"html/template"
 	"log"
 	"net/http"
+	"strconv"
 )
 
 // 消费测试
@@ -29,11 +30,13 @@ func main() {
 			}
 		}()
 
+		txnAmt, _ := strconv.ParseInt(request.FormValue("txnAmt"), 10, 64)
+
 		// 跳转银联全渠道手机网页支付界面
 		result, err := ocapp.Consume(cfg, &ocapp.ConsumeParams{
 			AccNo:       request.FormValue("accNo"),
 			OrderId:     request.FormValue("orderId"),
-			TxnAmt:      request.FormValue("txnAmt"),
+			TxnAmt:      txnAmt,
 			BackUrl:     "https://ms.himkt.cn/mswork/consume/back",
 			TxnTime:     ocwap.TxnTime(),
 			ReqReserved: "-",

@@ -10,7 +10,7 @@ import (
 func TestConsume(t *testing.T) {
 	result, err := ocapp.Consume(cfg, &ocapp.ConsumeParams{
 		OrderId:     "300000000011",
-		TxnAmt:      "1",
+		TxnAmt:      1,
 		BackUrl:     "https://msd.himkt.cn/work/consume/back",
 		TxnTime:     ocapp.TxnTime(),
 		ReqReserved: "",

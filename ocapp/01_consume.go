@@ -5,6 +5,7 @@ import (
 	log "github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
+	"strconv"
 )
 
 // Consume 消费接口
@@ -16,7 +17,7 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 	pm["bizType"] = BIZ_TYPE
 	pm["merId"] = cfg.MerId
 	pm["orderId"] = p.OrderId
-	pm["txnAmt"] = p.TxnAmt
+	pm["txnAmt"] = strconv.FormatInt(p.TxnAmt, 10)
 	pm["txnTime"] = p.TxnTime // 十四位字符串
 	pm["currencyCode"] = CURRENCY_CODE
 	pm["accessType"] = ACCESS_TYPE
@@ -39,7 +40,7 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 type ConsumeParams struct {
 	AccNo       string `json:"accNo" description:"非必填,银行卡号，用于帮用户自动填写卡号"`
 	OrderId     string `json:"orderId" description:"必填，业务系统订单号，不能重复，长度8到40，不能存在符号"`
-	TxnAmt      string `json:"txnAmt" description:"必填，交易金额，单位分"`
+	TxnAmt      int64  `json:"txnAmt" description:"必填，交易金额，单位分"`
 	BackUrl     string `json:"backUrl" description:"必填，后台接受支付结果通知URL"`
 	TxnTime     string `json:"txnTime" description:"必填，交易时间 ,14位 yyyyMMddHHmmss  商户代码merId、商户订单号orderId、订单发送时间txnTime三要素唯一确定一笔交易。"`
 	ReqReserved string `json:"reqReserved" description:"非必填，请求方保留域,通知原样返回"`
