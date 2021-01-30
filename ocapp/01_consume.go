@@ -64,59 +64,68 @@ type ConsumeResult struct {
 //ConsumeNotifyHandler 消费异步通知结果
 func ConsumeNotifyHandler(cbFunc func(o *ConsumeNotifyEntity) error) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		var (
-			err       error
-			requestId = Rand32()
-			orderId   string
-			reqParams string
-			reqBody   string
-			resBody   string
-		)
-		defer func() {
-			log.Info(requestId, orderId, "全渠道消费通知 request.RequestURI：", request.RequestURI)
-			log.Info(requestId, orderId, "全渠道消费通知 reqParams：", reqParams)
-			log.Info(requestId, orderId, "全渠道消费通知 reqBody JSON：", reqBody)
-			log.Info(requestId, orderId, "全渠道消费通知 resBody JSON：", resBody)
-			if err != nil {
-				log.Warn(requestId, "全渠道消费通知处理异常：", err.Error())
-				writer.WriteHeader(500)
-				writer.Write([]byte(err.Error()))
-				return
-			}
-			writer.Write([]byte(resBody))
-		}()
-
-		// 接收通知参数
-		rbytes, err := ioutil.ReadAll(request.Body)
+		resBody, err := ConsumeNotify(request, cbFunc)
 		if err != nil {
+			writer.WriteHeader(500)
+			writer.Write([]byte(err.Error()))
 			return
 		}
-		reqParams = string(rbytes)
-		// 验证签名与返回码
-		bmap, err := NotifyVerify(reqParams)
-		if err != nil {
-			return
-		}
-
-		pbytes, err := json.Marshal(bmap)
-		if err != nil {
-			return
-		}
-		reqBody = string(pbytes)
-
-		var entity *ConsumeNotifyEntity
-		err = json.Unmarshal(pbytes, &entity)
-		if err != nil {
-			return
-		}
-
-		// 回调业务函数
-		err = cbFunc(entity)
-		if err != nil {
-			return
-		}
-		resBody = `{"respCode":"00","requestId":` + requestId + `,"orderId":"` + orderId + `"}`
+		writer.Write([]byte(resBody))
 	})
+}
+
+// 消费通知处理
+func ConsumeNotify(request *http.Request, cbFunc func(o *ConsumeNotifyEntity) error) (resBody string, err error) {
+	var (
+		//err       error
+		requestId = Rand32()
+		orderId   string
+		reqParams string
+		reqBody   string
+		//resBody   string
+	)
+	defer func() {
+		log.Info(requestId, orderId, " 全渠道消费通知 request.RequestURI：", request.RequestURI)
+		log.Info(requestId, orderId, " 全渠道消费通知 reqParams：", reqParams)
+		log.Info(requestId, orderId, " 全渠道消费通知 reqBody JSON：", reqBody)
+		log.Info(requestId, orderId, " 全渠道消费通知 resBody JSON：", resBody)
+		if err != nil {
+			log.Warn(requestId, orderId, " 全渠道消费通知处理异常：", err.Error())
+			return
+		}
+	}()
+
+	// 接收通知参数
+	rbytes, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return
+	}
+	reqParams = string(rbytes)
+	// 验证签名与返回码
+	bmap, err := NotifyVerify(reqParams)
+	if err != nil {
+		return
+	}
+
+	pbytes, err := json.Marshal(bmap)
+	if err != nil {
+		return
+	}
+	reqBody = string(pbytes)
+
+	var entity *ConsumeNotifyEntity
+	err = json.Unmarshal(pbytes, &entity)
+	if err != nil {
+		return
+	}
+
+	// 回调业务函数
+	err = cbFunc(entity)
+	if err != nil {
+		return
+	}
+	resBody = `{"respCode":"00","requestId":` + requestId + `,"orderId":"` + orderId + `"}`
+	return
 }
 
 type ConsumeNotifyEntity struct {
