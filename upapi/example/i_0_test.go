@@ -1,17 +1,16 @@
-package test
+package example
 
 import (
-	"github.com/hlib-go/hunpay/upsdk"
-	"testing"
+	"github.com/hlib-go/hunpay/upapi"
 )
 
 // 宁波银联-宁波通联
-var c = upsdk.New(&upsdk.Config{
-	BaseServiceUrl: "https://open.95516.com/open/access/1.0",
-	AppId:          "9e211304be4a46fdb7dff03f7a01b2ef",
-	Secret:         "acf33e66a8a54f9d977d4143e1f17bfe",
-	SymmetricKey:   "bad5200bfe4a91e5cb02f1f2ef1aec08bad5200bfe4a91e5",
-	UpPublicKey:    "",
+var config = &upapi.Config{
+	ServiceUrl:   "https://open.95516.com/open/access/1.0",
+	AppId:        "9e211304be4a46fdb7dff03f7a01b2ef",
+	Secret:       "acf33e66a8a54f9d977d4143e1f17bfe",
+	SymmetricKey: "bad5200bfe4a91e5cb02f1f2ef1aec08bad5200bfe4a91e5",
+	UpPublicKey:  "",
 	MchPrivateKey: `-----BEGIN PRIVATE KEY-----
 MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQC7kdKuAnMgu7AV
 D4hfaT9i4TpDBVxN0xA2A6vGppaHB5F8N9vHRCBJLdAm04+HkdDmxG41Hbq7lABn
@@ -40,14 +39,4 @@ EzgxZuLlRIyWS2wnyxoIneRfKEoXAnaeZTho0jYBqFsKsButRIVP1DLlzS99NCi0
 N2MTKkYWZZbs2kFin7sB92Xy3QYoHeru4fZK3MdBRj85e17n9MBfVCnGTq6cbxbm
 MG7BFjV7aoR/h2bkkVv6mxw=
 -----END PRIVATE KEY-----`,
-})
-
-func init() {
-	c.GetBackendToken = func(refresh bool) string {
-		return "hgFEQPw+Qli7xG1ATLWk8Q=="
-	}
-}
-
-func TestGetRandomString(t *testing.T) {
-	t.Log(upsdk.GetRandomString(32))
 }

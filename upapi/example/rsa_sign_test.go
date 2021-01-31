@@ -1,4 +1,4 @@
-package test
+package example
 
 import (
 	"encoding/base64"

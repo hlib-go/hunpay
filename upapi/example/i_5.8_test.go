@@ -1,8 +1,9 @@
-package test
+package example
 
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/hlib-go/hunpay/upapi"
 	"github.com/hlib-go/hunpay/upsdk"
 	"net/http"
 	"testing"
@@ -18,7 +19,7 @@ func TestQualReduce(t *testing.T) {
 	  "qualType": "mobile",
 	  "qualValue":"13912300661",
 	  "activityNumber":"1320200615282465"*/
-	_, err := c.QualReduce("423456789039", "1320200615282465", "3a5d4792-48c3-4416-809d-ada5da535f84", "mobile", "13611703040")
+	_, err := upapi.QualReduce(config, "423456789039", "1320200615282465", "3a5d4792-48c3-4416-809d-ada5da535f84", "mobile", "13611703040")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -40,7 +41,7 @@ func TestQualReduce(t *testing.T) {
 */
 // 5.8.9  赠送优惠券 <coupon.download>
 func Test_CouponDownload(t *testing.T) {
-	r, err := c.CouponDownload(&upsdk.CouponDownloadParams{
+	r, err := upapi.CouponDownload(config, &upapi.CouponDownloadParams{
 		TransSeqId: upsdk.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
 		CouponId:   "3102021012562511",
@@ -63,11 +64,7 @@ func Test_CouponDownload(t *testing.T) {
 // 5.8.10  赠送优惠券结果查询 <coupon.query>
 func Test_CouponQuery(t *testing.T) {
 	//"transSeqId":"4ff007f90a384eee869d99d7166ed342","transTs":"20200906"
-	c.GetBackendToken = func(refresh bool) string {
-		t, _ := c.BackendToken()
-		return t.BackendToken
-	}
-	err := c.CouponQuery(upsdk.Rand32(), "2922b52272a04cc9a6cec290c2a6d324", "20201015")
+	err := upapi.CouponQuery(config, upsdk.Rand32(), "2922b52272a04cc9a6cec290c2a6d324", "20201015", "")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -76,7 +73,7 @@ func Test_CouponQuery(t *testing.T) {
 
 // 5.8.12  优惠券活动剩余名额查询
 func Test_ActivityQuota(t *testing.T) {
-	_, err := c.ActivityQuota(upsdk.Rand32(), "3102020072729846", "5")
+	_, err := upapi.ActivityQuota(config, upsdk.Rand32(), "3102020072729846", "5", "")
 	if err != nil {
 		t.Error(err.Error())
 		return

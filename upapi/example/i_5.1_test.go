@@ -1,12 +1,13 @@
-package test
+package example
 
 import (
 	"fmt"
+	"github.com/hlib-go/hunpay/upapi"
 	"testing"
 )
 
 func TestFrontToken(t *testing.T) {
-	r, err := c.FrontToken()
+	r, err := upapi.FrontToken(config)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -15,7 +16,7 @@ func TestFrontToken(t *testing.T) {
 
 // 5.1.1 获取backendToken<backendToken>
 func TestBackendToken(t *testing.T) {
-	r, err := c.BackendToken()
+	r, err := upapi.BackendToken(config)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
