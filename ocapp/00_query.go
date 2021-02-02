@@ -2,21 +2,18 @@ package ocapp
 
 // 文档：https://open.unionpay.com/tjweb/acproduct/APIList?acpAPIId=337&apiservId=453&version=V2.2&bussType=0
 
-// Query 交易状态查询接口
-func Query(cfg *Config, orderId string) (result *QueryResult, err error) {
-	var pm = make(map[string]string)
+// Query 交易状态查询接口（可查消费/撤销/退款等交易返回码）
+func Query(cfg *Config, orderId, txnTime string) (result *QueryResult, err error) {
+	var bm = make(map[string]string)
 	// 以下参数根据接口文档与示例填写
-	pm["txnType"] = "00"
-	pm["txnSubType"] = "00"
-	pm["bizType"] = BIZ_TYPE
-	pm["accessType"] = ACCESS_TYPE
-	pm["txnTime"] = TxnTime()
-	pm["orderId"] = orderId
+	bm["txnType"] = "00"
+	bm["txnSubType"] = "00"
+	bm["bizType"] = BIZ_TYPE
+	bm["accessType"] = ACCESS_TYPE
+	bm["orderId"] = orderId
+	bm["txnTime"] = txnTime
 
-	err = BackTransReqUnmarshal(cfg, pm, &result)
-	if err != nil {
-		return
-	}
+	err = QueryTransUnmarshal("query", cfg, bm, &result)
 	return
 }
 

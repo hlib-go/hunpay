@@ -16,6 +16,7 @@ func init() {
 	bytes, err := ioutil.ReadFile("C:\\www\\certs\\himkt-unionpay.key")
 	if err != nil {
 		fmt.Println("Error: ", err.Error())
+		return
 	}
 	cfg.MerPrivateKey = string(bytes)
 }

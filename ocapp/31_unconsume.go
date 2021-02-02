@@ -29,7 +29,7 @@ func UnConsume(cfg *Config, p *UnConsumeParams) (result *UnConsumeResult, err er
 		pm["reqReserved"] = p.ReqReserved
 	}
 	// 返回表单POST请求参数
-	err = BackTransReqUnmarshal(cfg, pm, &result)
+	err = BackTransReqUnmarshal("unconsume", cfg, pm, &result)
 	if err != nil {
 		return
 	}
@@ -103,6 +103,11 @@ func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnC
 	if err != nil {
 		return
 	}
+	if rbytes == nil || string(rbytes) == "" {
+		err = errors.New("无效请求，没有接收到消费撤销通知参数")
+		return
+	}
+
 	params, err := url.QueryUnescape(string(rbytes))
 	if err != nil {
 		return

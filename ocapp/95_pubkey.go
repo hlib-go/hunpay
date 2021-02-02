@@ -18,7 +18,7 @@ func Pubkey(cfg *Config) (encryptPubKeyCert string, err error) {
 	bm["orderId"] = Rand32()
 	bm["txnTime"] = TxnTime()
 
-	respMap, err := BackTransReq(cfg, bm)
+	respMap, err := BackTransReq("pubkey", cfg, bm)
 	if err != nil {
 		return
 	}

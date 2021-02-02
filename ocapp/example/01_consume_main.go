@@ -131,7 +131,7 @@ func main() {
 	// https://msd.himkt.cn/work/query?orderId=T0000002
 	http.HandleFunc("/query", func(writer http.ResponseWriter, request *http.Request) {
 		orderId := request.FormValue("orderId")
-		result, err := ocapp.Query(cfg, orderId)
+		result, err := ocapp.Query(cfg, orderId, "")
 		if err != nil {
 			fmt.Println("Query Error", err.Error())
 			return

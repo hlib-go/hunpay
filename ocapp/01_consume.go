@@ -30,7 +30,7 @@ func Consume(cfg *Config, p *ConsumeParams) (result *ConsumeResult, err error) {
 	if p.ReqReserved != "" {
 		pm["reqReserved"] = p.ReqReserved
 	}
-	err = AppTransReqUnmarshal(cfg, pm, &result)
+	err = AppTransReqUnmarshal("consume", cfg, pm, &result)
 	if err != nil {
 		return
 	}

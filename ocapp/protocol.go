@@ -3,7 +3,7 @@ package ocapp
 import (
 	"encoding/json"
 	"errors"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"net/http"
 	"net/url"
@@ -14,18 +14,19 @@ import (
 
 // Method ：POST
 // ContentType ： application/x-www-form-urlencoded;charset=utf-8
-func Post(serviceUrl, body string) (resBytes []byte, err error) {
+func Post(trace string, serviceUrl, body string) (resBytes []byte, err error) {
 	contentType := "application/x-www-form-urlencoded;charset=utf-8"
 	var (
 		begTime   = time.Now().UnixNano()
 		endTime   int64
 		requestId = Rand32()
+		nlog      = logrus.WithField("requestId", requestId)
 	)
 	defer func() {
-		log.Info(requestId, " ocwap请求URL：POST "+serviceUrl+"    "+contentType)
-		log.Info(requestId, " ocwap请求报文 ", body)
-		log.Info(requestId, " ocwap响应报文 ", url.QueryEscape(string(resBytes)))
-		log.Info(requestId, " ocwap请求耗时 ", (endTime-begTime)/1e6, "ms")
+		nlog.Info(trace, " ocwap请求URL：POST "+serviceUrl+"    "+contentType)
+		nlog.Info(trace, " ocwap请求报文 ", body)
+		nlog.Info(trace, " ocwap响应报文 ", string(resBytes))
+		nlog.Info(trace, " ocwap请求耗时 ", (endTime-begTime)/1e6, "ms")
 	}()
 	resp, err := http.Post(serviceUrl, contentType, strings.NewReader(body))
 	endTime = time.Now().UnixNano()
@@ -58,8 +59,8 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 		reqBody   string
 	)
 	defer func() {
-		log.Info(requestId, " ocwap前端请求地址 ", url)
-		log.Info(requestId, " ocwap前端请求报文 ", reqBody)
+		logrus.Info(requestId, " ocwap前端请求地址 ", url)
+		logrus.Info(requestId, " ocwap前端请求报文 ", reqBody)
 	}()
 	url = cfg.ServiceUrl + "/gateway/api/frontTransReq.do"
 	bm["version"] = VERSION
@@ -85,7 +86,7 @@ func FrontTransReq(cfg *Config, bm map[string]string) (url string, kv map[string
 }
 
 // 后台接口交易
-func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string, err error) {
+func BackTransReq(trace string, conf *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
 		url = conf.ServiceUrl + "/gateway/api/backTransReq.do"
 	)
@@ -109,7 +110,7 @@ func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string,
 	reqBody := MapConvertParams(bm)
 
 	// HTTP POST
-	resBytes, err := Post(url, reqBody)
+	resBytes, err := Post(trace, url, reqBody)
 	if err != nil {
 		return
 	}
@@ -135,8 +136,8 @@ func BackTransReq(conf *Config, bm map[string]string) (resMap map[string]string,
 }
 
 // 后台请求，响应结果转为结构体
-func BackTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{}) (err error) {
-	resMap, err := BackTransReq(cfg, bm)
+func BackTransReqUnmarshal(trace string, cfg *Config, bm map[string]string, result interface{}) (err error) {
+	resMap, err := BackTransReq(trace, cfg, bm)
 	if err != nil {
 		return
 	}
@@ -152,7 +153,7 @@ func BackTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{}
 }
 
 // 手机支付控件（含安卓Pay）
-func AppTransReq(conf *Config, bm map[string]string) (resMap map[string]string, err error) {
+func AppTransReq(trace string, conf *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
 		url = conf.ServiceUrl + "/gateway/api/appTransReq.do"
 	)
@@ -176,7 +177,7 @@ func AppTransReq(conf *Config, bm map[string]string) (resMap map[string]string, 
 	reqBody := MapConvertParams(bm)
 
 	// HTTP POST
-	resBytes, err := Post(url, reqBody)
+	resBytes, err := Post(trace, url, reqBody)
 	if err != nil {
 		return
 	}
@@ -202,8 +203,8 @@ func AppTransReq(conf *Config, bm map[string]string) (resMap map[string]string, 
 }
 
 // AppTransReqUnmarshal 手机支付控件（含安卓Pay）转结构体
-func AppTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{}) (err error) {
-	resMap, err := AppTransReq(cfg, bm)
+func AppTransReqUnmarshal(trace string, cfg *Config, bm map[string]string, result interface{}) (err error) {
+	resMap, err := AppTransReq(trace, cfg, bm)
 	if err != nil {
 		return
 	}
@@ -211,7 +212,6 @@ func AppTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{})
 	if err != nil {
 		return
 	}
-	log.Info("云闪付手机支付控件下单交易响应报文JSON格式：", string(resBytes))
 	err = json.Unmarshal(resBytes, result)
 	if err != nil {
 		return
@@ -219,8 +219,8 @@ func AppTransReqUnmarshal(cfg *Config, bm map[string]string, result interface{})
 	return
 }
 
-// queryTrans 查询交易
-func QueryTrans(cfg *Config, bm map[string]string) (resMap map[string]string, err error) {
+// QueryTrans 查询交易
+func QueryTrans(trace string, cfg *Config, bm map[string]string) (resMap map[string]string, err error) {
 	var (
 		url = cfg.ServiceUrl + "/gateway/api/queryTrans.do"
 	)
@@ -244,7 +244,7 @@ func QueryTrans(cfg *Config, bm map[string]string) (resMap map[string]string, er
 	reqBody := MapConvertParams(bm)
 
 	// HTTP POST
-	resBytes, err := Post(url, reqBody)
+	resBytes, err := Post(trace, url, reqBody)
 	if err != nil {
 		return
 	}
@@ -265,6 +265,24 @@ func QueryTrans(cfg *Config, bm map[string]string) (resMap map[string]string, er
 	// 验证响应状态码
 	if resMap["respCode"] != RESP_OK {
 		err = errors.New("UP" + resMap["respCode"] + ":" + resMap["respMsg"])
+	}
+	return
+}
+
+// QueryTransUnmarshal 查询交易转结构体
+func QueryTransUnmarshal(trace string, cfg *Config, bm map[string]string, result interface{}) (err error) {
+	resMap, err := QueryTrans(trace, cfg, bm)
+	if err != nil {
+		return
+	}
+	resBytes, err := json.Marshal(resMap)
+	if err != nil {
+		return
+	}
+	logrus.WithField("orderId", bm["orderId"]).Info("全渠道支付订单查询：", string(resBytes))
+	err = json.Unmarshal(resBytes, result)
+	if err != nil {
+		return
 	}
 	return
 }
