@@ -25,7 +25,9 @@ func UnConsume(cfg *Config, p *UnConsumeParams) (result *UnConsumeResult, err er
 	pm["channelType"] = "08"
 	pm["currencyCode"] = "156" // 交易币种
 	pm["backUrl"] = p.BackUrl
-	pm["reqReserved"] = p.ReqReserved
+	if p.ReqReserved != "" {
+		pm["reqReserved"] = p.ReqReserved
+	}
 	// 返回表单POST请求参数
 	err = BackTransReqUnmarshal(cfg, pm, &result)
 	if err != nil {
@@ -64,81 +66,90 @@ type UnConsumeResult struct {
 //UnConsumeNotifyHandler 消费撤销异步通知结果
 func UnConsumeNotifyHandler(cbFunc func(o *UnConsumeNotifyEntity) error) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		var (
-			err       error
-			requestId = Rand32()
-			orderId   string
-			reqParams string
-			reqBody   string
-			resBody   string
-		)
-		defer func() {
-			log.Info(requestId, orderId, "全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
-			log.Info(requestId, orderId, "全渠道消费撤销通知 reqParams：", reqParams)
-			log.Info(requestId, orderId, "全渠道消费撤销通知 reqBody：", reqBody)
-			log.Info(requestId, orderId, "全渠道消费撤销通知 resBody：", resBody)
-			if err != nil {
-				log.Warn(requestId, "全渠道消费通知处理异常：", err.Error())
-				writer.WriteHeader(500)
-				writer.Write([]byte(err.Error()))
-				return
-			}
-			writer.Write([]byte(resBody))
-		}()
-
-		// 接收通知参数
-		rbytes, err := ioutil.ReadAll(request.Body)
+		resBody, err := UnConsumeNotify("", request, cbFunc)
 		if err != nil {
+			writer.WriteHeader(500)
+			writer.Write([]byte(err.Error()))
 			return
 		}
-		params, err := url.QueryUnescape(string(rbytes))
-		if err != nil {
-			return
-		}
-		reqParams = params
-
-		bmap := ParamsConvertMap(params)
-		orderId = bmap["orderId"]
-
-		// 验签
-		signValue := RsaSignSortMap(bmap)
-		err = RsaWithSha256Verify(signValue, bmap["signature"], bmap["signPubKeyCert"])
-		if err != nil {
-			return
-		}
-
-		// 验证返回码
-		if bmap["respCode"] != RESP_OK {
-			err = errors.New("UP" + bmap["respCode"] + ":" + bmap["respMsg"])
-			return
-		}
-
-		pbytes, err := json.Marshal(bmap)
-		if err != nil {
-			return
-		}
-		reqBody = string(pbytes)
-
-		var entity *UnConsumeNotifyEntity
-		err = json.Unmarshal(pbytes, &entity)
-		if err != nil {
-			return
-		}
-
-		// 回调业务函数
-		err = cbFunc(entity)
-		if err != nil {
-			return
-		}
-		resBody = `{"respCode":"00","requestId":` + requestId + `,"orderId":"` + orderId + `"}`
+		writer.Write([]byte(resBody))
 	})
+}
+
+func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnConsumeNotifyEntity) error) (resBody string, err error) {
+	if requestId == "" {
+		requestId = Rand32()
+	}
+	var (
+		nlog      = log.WithField("requestId", requestId)
+		orderId   string
+		reqParams string
+		reqBody   string
+		//resBody   string
+	)
+	defer func() {
+		nlog.Info(orderId, " 全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
+		nlog.Info(orderId, " 全渠道消费撤销通知 reqParams：", reqParams)
+		nlog.Info(orderId, " 全渠道消费撤销通知 reqBody：", reqBody)
+		nlog.Info(orderId, " 全渠道消费撤销通知 resBody：", resBody)
+		if err != nil {
+			nlog.Warn(orderId, " 全渠道消费通知处理异常：", err.Error())
+			return
+		}
+	}()
+
+	// 接收通知参数
+	rbytes, err := ioutil.ReadAll(request.Body)
+	if err != nil {
+		return
+	}
+	params, err := url.QueryUnescape(string(rbytes))
+	if err != nil {
+		return
+	}
+	reqParams = params
+
+	bmap := ParamsConvertMap(params)
+	orderId = bmap["orderId"]
+
+	// 验签
+	signValue := RsaSignSortMap(bmap)
+	err = RsaWithSha256Verify(signValue, bmap["signature"], bmap["signPubKeyCert"])
+	if err != nil {
+		return
+	}
+
+	// 验证返回码
+	if bmap["respCode"] != RESP_OK {
+		err = errors.New("UP" + bmap["respCode"] + ":" + bmap["respMsg"])
+		return
+	}
+
+	pbytes, err := json.Marshal(bmap)
+	if err != nil {
+		return
+	}
+	reqBody = string(pbytes)
+
+	var entity *UnConsumeNotifyEntity
+	err = json.Unmarshal(pbytes, &entity)
+	if err != nil {
+		return
+	}
+
+	// 回调业务函数
+	err = cbFunc(entity)
+	if err != nil {
+		return
+	}
+	resBody = `{"respCode":"00","requestId":` + requestId + `,"orderId":"` + orderId + `"}`
+	return
 }
 
 type UnConsumeNotifyEntity struct {
 	QueryId            string `json:"queryId"`
 	CurrencyCode       string `json:"currencyCode"`
 	TraceTime          string `json:"traceTime"`
-	Signature          string `json:"signature"`
 	SignMethod         string `json:"signMethod"`
 	SettleCurrencyCode string `json:"settleCurrencyCode"`
 	SettleAmt          string `json:"settleAmt"`
