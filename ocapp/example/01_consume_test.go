@@ -8,8 +8,8 @@ import (
 
 // 消费下单测试，获取tn，使用云闪付upsdk调起支付
 func TestConsume(t *testing.T) {
-	result, err := ocapp.Consume(cfg, &ocapp.ConsumeParams{
-		OrderId:     "300000000011",
+	result, err := ocapp.Consume(cfg821330248164060, &ocapp.ConsumeParams{
+		OrderId:     "30000000001112",
 		TxnAmt:      1,
 		BackUrl:     "https://msd.himkt.cn/work/consume/back",
 		TxnTime:     ocapp.TxnTime(),

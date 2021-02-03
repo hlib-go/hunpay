@@ -13,3 +13,12 @@ func TestPubkey(t *testing.T) {
 	}
 	t.Log("success................")
 }
+
+// 获取银联平台公钥2
+func TestPubkey2(t *testing.T) {
+	_, err := ocapp.Pubkey(cfg821330248164060)
+	if err != nil {
+		t.Error(err.Error())
+	}
+	t.Log("success................")
+}
