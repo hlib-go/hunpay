@@ -14,7 +14,7 @@ import (
 // 消费测试
 func main() {
 	// https://msd.himkt.cn/work/consume?orderId=T0000001&txnAmt=1&accNo=6251211100976741
-	// https://ms.himkt.cn/mswork/consume?orderId=T0000002&txnAmt=1&accNo=6214830213065526   ，云闪付扫码方式访问此链接，直接调起控件支付
+	// https://ms.himkt.cn/mswork/consume?orderId=T00000021112&txnAmt=1&accNo=6214830213065526   ，云闪付扫码方式访问此链接，直接调起控件支付
 	// 消费，跳转云闪付控件支付
 	http.HandleFunc("/consume", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
@@ -33,7 +33,7 @@ func main() {
 		txnAmt, _ := strconv.ParseInt(request.FormValue("txnAmt"), 10, 64)
 
 		// 跳转银联全渠道手机网页支付界面
-		result, err := ocapp.Consume(cfg, &ocapp.ConsumeParams{
+		result, err := ocapp.Consume(cfg821330248164060, &ocapp.ConsumeParams{
 			AccNo:       request.FormValue("accNo"),
 			OrderId:     request.FormValue("orderId"),
 			TxnAmt:      txnAmt,
