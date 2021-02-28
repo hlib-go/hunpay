@@ -29,12 +29,12 @@ func init() {
 	"upSymmetricKey" : "20a140eabc4343f2c8cd62549e7a0bf420a140eabc4343f2",
 */
 var cfgApp = upsdk.New(&upsdk.Config{
-	BaseServiceUrl: "https://open.95516.com/open/access/1.0",
-	AppId:          "50f9fdbb53b64209ae3690d22dff778e", // appId关联了域名 ms.himkt.cn, 使用其它域名无法使用
+	/*BaseServiceUrl: "https://open.95516.com/open/access/1.0",
+	AppId:          "", // appId关联了域名 ms.himkt.cn, 使用其它域名无法使用
 	Secret:         "127a5ec59b2241bea8df8f0d784fb403",
 	SymmetricKey:   "20a140eabc4343f2c8cd62549e7a0bf420a140eabc4343f2",
 	UpPublicKey:    "",
-	MchPrivateKey:  ``,
+	MchPrivateKey:  ``,*/
 })
 
 func init() {
