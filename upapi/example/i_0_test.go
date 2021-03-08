@@ -8,7 +8,7 @@ import (
 var config = &upapi.Config{
 	ServiceUrl:   "https://open.95516.com/open/access/1.0",
 	AppId:        "9e211304be4a46fdb7dff03f7a01b2ef",
-	Secret:       "acf33e66a8a54f9d977d4143e1f17bfe",
+	Secret:       "",
 	SymmetricKey: "bad5200bfe4a91e5cb02f1f2ef1aec08bad5200bfe4a91e5",
 	UpPublicKey:  "",
 	MchPrivateKey: `-----BEGIN PRIVATE KEY-----
@@ -40,3 +40,33 @@ N2MTKkYWZZbs2kFin7sB92Xy3QYoHeru4fZK3MdBRj85e17n9MBfVCnGTq6cbxbm
 MG7BFjV7aoR/h2bkkVv6mxw=
 -----END PRIVATE KEY-----`,
 }
+
+var config2 = &upapi.Config{
+	ServiceUrl:   "https://open.95516.com/open/access/1.0",
+	AppId:        "14525f83bb3c4dd68eca6511c93cb5ef",
+	Secret:       "",
+	SymmetricKey: "c761fef26ec7a86e64ba919b913e321cc761fef26ec7a86e",
+	UpPublicKey:  "",
+	MchPrivateKey: `-----BEGIN RSA PRIVATE KEY-----
+MIICdgIBADANBgkqhkiG9w0BAQEFAASCAmAwggJcAgEAAoGBAO17/rEMAmFdl/pi
+3q3PeT7DGeLOko7s3fupz2ine4oKp1yGI2nNNqSocctcERYQjD100DOVUaBCF6Ei
+Fm1vicgqICAjr0bMczgvukkeuDUlLMAunJ7ZVNehpM6TrLRtF+eu0dzF8CVu1mVE
+wrE+iYAkHKszueZ7yojayPoes37HAgMBAAECgYAhcV2rdwJ6zaBSTUwIc/giA32I
+uAhhgi+8eexQU42NIfTxjZ49Dv4L8ACeX6e0UL4/BU0whm2JQOVs9ozr+lIPjZK3
+l8Zp7zDQrcTZlS3dZzhR7HhM8oRsLnkMzVMk+3Pv0JePlPkQtll81rwz0DQewGWE
+6SMt/kU6IzqLaCuecQJBAPKJN7aD8iro0lkDGDdcxRMbuhJBzWvO2FaykHmG9dtQ
+uZPmQop28RG93L7JaJiwiKN2A9ZXhlXl8OSu/zEcbKkCQQD6qvxwqgVkhcTiBK7d
+OFwm4M9jYyDLDEK6cv9uHSMMzRvWpSQ3oKha7Tpgm9EqjRM6E4wUWI1uyLR2yjbE
+rMXvAkBcWxw4CC6jYF0ZQDBshIsXJ6vHX/9VWkLPYNfbLyVYCnlgdIJKL9jEpMP2
+csO9wRuHA12atWGWPCVrL6hFj0lhAkEApk26naSvXznAnZMt0GcL/F86OF4T66J+
+wuR4wr1h+6Q4y/dUR/O2vlyVVnMKGojuMKG3VehKLS3LTORr4aAe0QJAPViFv6ia
+ARaw1XJEdrzX1saPFQjUPCRs8Tz+6VBBKn8GiWeatuMmp75DiYTLLPdEnZTYOs/8
+XLKWa5Y2rdHbWQ==
+-----END RSA PRIVATE KEY-----`,
+}
+
+/*
+请求URL：https://open.95516.com/open/access/1.0/coupon.download
+请求报文：{"acctEntityTp":"03","appId":"14525f83bb3c4dd68eca6511c93cb5ef","cardNo":"","couponId":"3102021022567015","couponNum":1,"mobile":"qPyfpSGrtO1QJEZjOssu1A==","nonceStr":"Umct9GqsJGyfbhs2","openId":"","signature":"LutFFJxOLGANrSIpmdGfWUprioEexZ2U2RvwIxjviCTdeO0elUrfdUBpHlFSRJV1pnYQlpS4+DMegipRg8cvSL76cwheoXMJOksP7fzY/7XYLhU2RIkyVGSJZhLTRmb0DN30v9ZWuBJdpoN3rEIkQxT1KAo6gh/QxXU/5GqYjCU=","timestamp":"1614583547","transSeqId":"9e57ca8531a3f4766fb71c6091dea6f4","transTs":"20210301"}
+响应报文：{"resp":"N60003","msg":"加解密失败[N60003]","params":{}}
+*/
