@@ -7,7 +7,7 @@ import (
 )
 
 func TestFrontToken(t *testing.T) {
-	r, err := upapi.FrontToken(config)
+	r, err := upapi.FrontToken(config2)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

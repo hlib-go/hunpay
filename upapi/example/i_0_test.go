@@ -2,13 +2,16 @@ package example
 
 import (
 	"github.com/hlib-go/hunpay/upapi"
+	"io/ioutil"
 )
+
+var sbytes, _ = ioutil.ReadFile("../.secret/宁波银联闪券发券-secret")
 
 // 宁波银联-宁波通联
 var config = &upapi.Config{
 	ServiceUrl:   "https://open.95516.com/open/access/1.0",
 	AppId:        "9e211304be4a46fdb7dff03f7a01b2ef",
-	Secret:       "",
+	Secret:       string(sbytes),
 	SymmetricKey: "bad5200bfe4a91e5cb02f1f2ef1aec08bad5200bfe4a91e5",
 	UpPublicKey:  "",
 	MchPrivateKey: `-----BEGIN PRIVATE KEY-----

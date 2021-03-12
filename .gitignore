@@ -3,3 +3,4 @@
 *.iml
 *.exe
 /v3test/cert/*
+.secret
