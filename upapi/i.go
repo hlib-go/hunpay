@@ -59,6 +59,7 @@ func Post(c *Config, path string, bodyMap *BodyMap) (respBody *RespBody, err err
 	return
 }
 
+// Sha256 方式签名
 func Call(c *Config, path string, bm *BodyMap, result interface{}) (err error) {
 	plog := log.WithField("path", path)
 	begmillisecond := time.Now().UnixNano() / 1e6

@@ -51,6 +51,9 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 		return
 	}
 	switch resp.Resp {
+	case E3023.Code:
+		// 未注册云闪付APP
+		err = E3023
 	case "GCUP06038":
 		// Coupon download failed due to useId is limited.[GCUP06038]
 		err = ErrNew(resp.Resp, "超过限制次数")
