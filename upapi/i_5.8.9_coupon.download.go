@@ -65,7 +65,7 @@ func CouponDownload(c *Config, p *CouponDownloadParams) (r *CouponDownloadResult
 		err = ErrNew(resp.Resp, "Coupon download failed due to cityId is invalid")
 	case "GCUP07053":
 		// Coupon download failed due to no cardNo is invalid.[GCUP07053]
-		err = ErrNew(resp.Resp, "未绑定活动指定银行卡，请先去绑卡")
+		err = ErrNew(resp.Resp, "未绑定活动指定银行卡，请先去云闪付绑卡")
 	case "GCUP06045":
 		// Coupon download failed due to there has no coupon left.[GCUP06045]
 		err = ErrNew(resp.Resp, "该优惠券已达到领用上限")
