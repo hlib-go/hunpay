@@ -1,4 +1,4 @@
-package ocapp
+package ocapple
 
 import (
 	"encoding/json"
@@ -9,11 +9,13 @@ import (
 	"net/url"
 )
 
-// UnConsume 消费撤销接口
-func UnConsume(cfg *Config, p *UnConsumeParams) (result *UnConsumeResult, err error) {
+// 文档： https://open.unionpay.com/tjweb/acproduct/APIList?acpAPIId=336&apiservId=453&version=V2.2&bussType=0
+
+// 退货接口
+func Refund(cfg *Config, p *RefundParams) (result *RefundResult, err error) {
 	var pm = make(map[string]string)
 	// 以下参数根据接口文档与示例填写
-	pm["txnType"] = "31"
+	pm["txnType"] = "04"
 	pm["txnSubType"] = "00"
 	pm["bizType"] = BIZ_TYPE
 	pm["merId"] = cfg.MerId
@@ -29,24 +31,24 @@ func UnConsume(cfg *Config, p *UnConsumeParams) (result *UnConsumeResult, err er
 		pm["reqReserved"] = p.ReqReserved
 	}
 	// 返回表单POST请求参数
-	err = BackTransReqUnmarshal("unconsume", cfg, pm, &result)
+	err = BackTransReqUnmarshal("refund", cfg, pm, &result)
 	if err != nil {
 		return
 	}
+	// respCode=45&respMsg=已被成功退货或已被成功撤销[2004003]
 	return
 }
 
-type UnConsumeParams struct {
+type RefundParams struct {
 	OrigQryId   string `json:"origQryId" description:"原始消费交易的queryId"`
-	OrderId     string `json:"orderId" description:"必填，业务系统订单号，不能重复"`
-	TxnAmt      string `json:"txnAmt" description:"必填，交易金额，单位分"`
-	BackUrl     string `json:"backUrl" description:"必填，后台接受撤销结果的通知URL"`
-	TxnTime     string `json:"txnTime" description:"必填，订单发送时间  商户代码merId、商户订单号orderId、订单发送时间txnTime三要素唯一确定一笔交易。"`
-	ReqReserved string `json:"reqReserved" description:"非必填，请求方保留域,通知原样返回"`
+	OrderId     string `json:"orderId" description:"退款交易订单号，非原交易订单号"`
+	TxnTime     string `json:"txnTime" description:"退款交易时间，非原交易订单号"`
+	TxnAmt      string `json:"txnAmt" description:"退款金额"`
+	BackUrl     string `json:"backUrl" description:"退货结果通知URL"`
+	ReqReserved string `json:"reqReserved" description:"商户自定义保留域，交易应答时会原样返回"`
 }
 
-// 消费撤销接口响应
-type UnConsumeResult struct {
+type RefundResult struct {
 	QueryId     string `json:"queryId"`
 	RespCode    string `json:"respCode"`
 	RespMsg     string `json:"respMsg"`
@@ -60,13 +62,12 @@ type UnConsumeResult struct {
 	MerId       string `json:"merId"`
 	OrderId     string `json:"orderId"`
 	OrigQryId   string `json:"origQryId"`
-	Reserved    string `json:"reserved"`
 }
 
-//UnConsumeNotifyHandler 消费撤销异步通知结果
-func UnConsumeNotifyHandler(cbFunc func(o *UnConsumeNotifyEntity) error) http.Handler {
+//RefundNotifyHandler 消费退款异步通知结果
+func RefundNotifyHandler(cbFunc func(o *RefundNotifyEntity) error) http.Handler {
 	return http.HandlerFunc(func(writer http.ResponseWriter, request *http.Request) {
-		resBody, err := UnConsumeNotify("", request, cbFunc)
+		resBody, err := RefundNotify("", request, cbFunc)
 		if err != nil {
 			writer.WriteHeader(500)
 			writer.Write([]byte(err.Error()))
@@ -76,7 +77,7 @@ func UnConsumeNotifyHandler(cbFunc func(o *UnConsumeNotifyEntity) error) http.Ha
 	})
 }
 
-func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnConsumeNotifyEntity) error) (resBody string, err error) {
+func RefundNotify(requestId string, request *http.Request, cbFunc func(o *RefundNotifyEntity) error) (resBody string, err error) {
 	if requestId == "" {
 		requestId = Rand32()
 	}
@@ -88,12 +89,12 @@ func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnC
 		//resBody   string
 	)
 	defer func() {
-		nlog.Info(orderId, " 全渠道消费撤销通知 request.RequestURI：", request.RequestURI)
-		nlog.Info(orderId, " 全渠道消费撤销通知 reqParams：", reqParams)
-		nlog.Info(orderId, " 全渠道消费撤销通知 reqBody：", reqBody)
-		nlog.Info(orderId, " 全渠道消费撤销通知 resBody：", resBody)
+		nlog.Info(orderId, " 全渠道消费退款通知 request.RequestURI：", request.RequestURI)
+		nlog.Info(orderId, " 全渠道消费退款通知 reqParams：", reqParams)
+		nlog.Info(orderId, " 全渠道消费退款通知 reqBody：", reqBody)
+		nlog.Info(orderId, " 全渠道消费退款通知 resBody：", resBody)
 		if err != nil {
-			nlog.Warn(orderId, " 全渠道消费通知处理异常：", err.Error())
+			nlog.Warn(orderId, " 全渠道消费退款通知处理异常：", err.Error())
 			return
 		}
 	}()
@@ -104,7 +105,7 @@ func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnC
 		return
 	}
 	if rbytes == nil || string(rbytes) == "" {
-		err = errors.New("无效请求，没有接收到消费撤销通知参数")
+		err = errors.New("无效请求，没有接收到消费退款通知参数")
 		return
 	}
 
@@ -136,7 +137,7 @@ func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnC
 	}
 	reqBody = string(pbytes)
 
-	var entity *UnConsumeNotifyEntity
+	var entity *RefundNotifyEntity
 	err = json.Unmarshal(pbytes, &entity)
 	if err != nil {
 		return
@@ -151,7 +152,7 @@ func UnConsumeNotify(requestId string, request *http.Request, cbFunc func(o *UnC
 	return
 }
 
-type UnConsumeNotifyEntity struct {
+type RefundNotifyEntity struct {
 	QueryId            string `json:"queryId"`
 	CurrencyCode       string `json:"currencyCode"`
 	TraceTime          string `json:"traceTime"`
@@ -177,7 +178,7 @@ type UnConsumeNotifyEntity struct {
 	AccessType         string `json:"accessType"`
 	ReqReserved        string `json:"reqReserved"`
 	MerId              string `json:"merId"`
-	OrderId            string `json:"orderId"`
+	OrderId            string `json:"orderId"` // 订单号是退款交易的订单号，非消费交易订单号
 	OrigQryId          string `json:"origQryId"`
 	Reserved           string `json:"reserved"`
 }

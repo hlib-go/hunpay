@@ -17,15 +17,15 @@ func Refund(cfg *Config, p *RefundParams) (result *RefundResult, err error) {
 	// 以下参数根据接口文档与示例填写
 	pm["txnType"] = "04"
 	pm["txnSubType"] = "00"
-	pm["bizType"] = "000201"
+	pm["bizType"] = BIZ_TYPE
 	pm["merId"] = cfg.MerId
 	pm["origQryId"] = p.OrigQryId
 	pm["orderId"] = p.OrderId
 	pm["txnAmt"] = p.TxnAmt
 	pm["txnTime"] = p.TxnTime // 十四位字符串
-	pm["accessType"] = "0"
-	pm["channelType"] = "08"
-	pm["currencyCode"] = "156" // 交易币种
+	pm["accessType"] = ACCESS_TYPE
+	pm["channelType"] = CHANNEL_TYPE
+	pm["currencyCode"] = CURRENCY_CODE // 交易币种
 	pm["backUrl"] = p.BackUrl
 	if p.ReqReserved != "" {
 		pm["reqReserved"] = p.ReqReserved
