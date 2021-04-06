@@ -7,7 +7,7 @@ const (
 	SIGN_METHOD         = "01"                   //RSA SHA256 01（表示采用RSA签名） HASH表示散列算法
 	INVALID_REQUEST     = "Invalid request."     //版本号，交易类型、子类，签名方法，签名值等关键域未上送，返回“Invalid request.”；
 	INVALID_REQUEST_URI = "Invalid request URI." //交易类型和请求地址校验有误，返回“Invalid request URI.”
-	BIZ_TYPE            = "000201"               //业务类型，固定值 000201  B2C网关支付
+	BIZ_TYPE            = "000802"               //业务类型，固定值 000802  Apple Pay
 	CHANNEL_TYPE        = "08"                   //渠道类型，固定值  （07：互联网 08：移动）
 	ACCESS_TYPE         = "0"                    //接入类型 固定值0（0：商户直连接入 1：收单机构接入  2：平台商户接入）
 	CURRENCY_CODE       = "156"                  //交易币种，默认156

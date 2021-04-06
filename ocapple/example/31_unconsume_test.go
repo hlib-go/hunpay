@@ -3,7 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hlib-go/hunpay/ocapp"
+	"github.com/hlib-go/hunpay/ocapple"
 	log "github.com/sirupsen/logrus"
 	"net/http"
 	"testing"
@@ -13,12 +13,12 @@ import (
 
 // 消费撤销
 func TestUnConsume(t *testing.T) {
-	result, err := ocapp.UnConsume(cfg, &ocapp.UnConsumeParams{
+	result, err := ocapple.UnConsume(cfg, &ocapple.UnConsumeParams{
 		OrigQryId:   "232102011314361711318",
 		OrderId:     "135610866920014233615",
 		TxnAmt:      "1",
 		BackUrl:     "https://msd.himkt.cn/work/unconsume/notify",
-		TxnTime:     ocapp.TxnTime(),
+		TxnTime:     ocapple.TxnTime(),
 		ReqReserved: "",
 	})
 	if err != nil {
@@ -31,7 +31,7 @@ func TestUnConsume(t *testing.T) {
 
 // 消费撤销通知测试  https://msd.himkt.cn/work/unconsume/notify
 func TestUnConsumeNotify(t *testing.T) {
-	http.Handle("/unconsume/notify", ocapp.UnConsumeNotifyHandler(func(o *ocapp.UnConsumeNotifyEntity) error {
+	http.Handle("/unconsume/notify", ocapple.UnConsumeNotifyHandler(func(o *ocapple.UnConsumeNotifyEntity) error {
 		rbytes, _ := json.Marshal(o)
 		fmt.Println("收到消费撤销通知结果JSON：")
 		fmt.Println(rbytes)

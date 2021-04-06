@@ -3,8 +3,7 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/hlib-go/hunpay/ocapp"
-	"github.com/hlib-go/hunpay/ocwap"
+	"github.com/hlib-go/hunpay/ocapple"
 	"html/template"
 	"log"
 	"net/http"
@@ -33,12 +32,12 @@ func main() {
 		txnAmt, _ := strconv.ParseInt(request.FormValue("txnAmt"), 10, 64)
 
 		// 跳转银联全渠道手机网页支付界面
-		result, err := ocapp.Consume(cfg821330248164060, &ocapp.ConsumeParams{
+		result, err := ocapple.Consume(cfg821330248164060, &ocapple.ConsumeParams{
 			AccNo:       request.FormValue("accNo"),
 			OrderId:     request.FormValue("orderId"),
 			TxnAmt:      txnAmt,
 			BackUrl:     "https://ms.himkt.cn/mswork/consume/back",
-			TxnTime:     ocwap.TxnTime(),
+			TxnTime:     ocapple.TxnTime(),
 			ReqReserved: "-",
 		})
 		if err != nil {
@@ -60,7 +59,7 @@ func main() {
 		html := `
 <html>
 <head>
-	<title>云闪付控件支付</title>
+	<title>云闪付ApplePay支付</title>
     <script src="https://apps.bdimg.com/libs/jquery/2.1.4/jquery.min.js"></script>
     <!-- 云闪付UPSDK,需要依赖jquery -->
     <script src="https://open.95516.com/s/open/js/upsdk.js"></script>
@@ -122,7 +121,7 @@ func main() {
 	})
 
 	// 接受通知，判断状态00，调用查询接口，oriRespCode等于00，执行业务发货逻辑
-	http.Handle("/consume/back", ocapp.ConsumeNotifyHandler(func(o *ocapp.ConsumeNotifyEntity) error {
+	http.Handle("/consume/back", ocapple.ConsumeNotifyHandler(func(o *ocapple.ConsumeNotifyEntity) error {
 		bytes, _ := json.Marshal(o)
 		fmt.Println("JSON ConsumeNotifyEntity ", string(bytes))
 		return nil
@@ -131,7 +130,7 @@ func main() {
 	// https://msd.himkt.cn/work/query?orderId=T0000002
 	http.HandleFunc("/query", func(writer http.ResponseWriter, request *http.Request) {
 		orderId := request.FormValue("orderId")
-		result, err := ocapp.Query(cfg, orderId, "")
+		result, err := ocapple.Query(cfg, orderId, "")
 		if err != nil {
 			fmt.Println("Query Error", err.Error())
 			return
