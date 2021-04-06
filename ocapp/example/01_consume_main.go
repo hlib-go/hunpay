@@ -4,7 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/hlib-go/hunpay/ocapp"
-	"github.com/hlib-go/hunpay/ocwap"
+	"github.com/hlib-go/hunpay/upapi"
 	"html/template"
 	"log"
 	"net/http"
@@ -14,7 +14,7 @@ import (
 // 消费测试
 func main() {
 	// https://msd.himkt.cn/work/consume?orderId=T0000001&txnAmt=1&accNo=6251211100976741
-	// https://ms.himkt.cn/mswork/consume?orderId=T00000021112&txnAmt=1&accNo=6214830213065526   ，云闪付扫码方式访问此链接，直接调起控件支付
+	// https://ms.himkt.cn/mswork/consume?orderId=T00000021114&txnAmt=1&accNo=6214830213065526   ，云闪付扫码方式访问此链接，直接调起控件支付
 	// 消费，跳转云闪付控件支付
 	http.HandleFunc("/consume", func(writer http.ResponseWriter, request *http.Request) {
 		writer.Header().Set("Content-Type", "text/html;charset=utf-8")
@@ -38,7 +38,7 @@ func main() {
 			OrderId:     request.FormValue("orderId"),
 			TxnAmt:      txnAmt,
 			BackUrl:     "https://ms.himkt.cn/mswork/consume/back",
-			TxnTime:     ocwap.TxnTime(),
+			TxnTime:     ocapp.TxnTime(),
 			ReqReserved: "-",
 		})
 		if err != nil {
@@ -48,7 +48,8 @@ func main() {
 		tn := result.Tn
 
 		fmt.Println("RU-> ", "https://ms.himkt.cn/mswork"+request.RequestURI)
-		bm := cfgApp.UpsdkConfig("https://ms.himkt.cn/mswork"+request.RequestURI, true)
+		frontToken, _ := upapi.FrontToken(upConf)
+		bm := upapi.UpsdkConfig(upConf, "https://ms.himkt.cn/mswork"+request.RequestURI, frontToken.FrontToken, true)
 
 		p := make(map[string]string)
 		p["tn"] = tn
@@ -139,6 +140,18 @@ func main() {
 		bytes, _ := json.Marshal(result)
 		fmt.Println("resultJSON", string(bytes))
 		writer.Write(bytes)
+	})
+
+	http.HandleFunc("/result", func(writer http.ResponseWriter, request *http.Request) {
+		var (
+			errorcode = request.FormValue("errorcode")
+			errmsg    = request.FormValue("errmsg")
+			code      = request.FormValue("code")
+			state     = request.FormValue("state")
+		)
+		rs := fmt.Sprintf("errorCode=%s  errmsg=%s   code=%s  state=%s", errorcode, errmsg, code, state)
+		log.Println(rs)
+		writer.Write([]byte(rs))
 	})
 
 	fmt.Println("Start serve Listen 80 ...")
