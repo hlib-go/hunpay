@@ -11,7 +11,7 @@ var appid_14525f83bb3c4dd68eca6511c93cb5ef *upapi.Config
 
 func init() {
 	log.SetReportCaller(true)
-	fbs, err := ioutil.ReadFile("/www/certs/cfg.appid.14525f83bb3c4dd68eca6511c93cb5ef.json")
+	fbs, err := ioutil.ReadFile("/certs/cfg.appid.14525f83bb3c4dd68eca6511c93cb5ef.json")
 	if err != nil {
 		log.Error(err)
 	}

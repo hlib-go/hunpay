@@ -41,10 +41,10 @@ func TestQualReduce(t *testing.T) {
 */
 // 5.8.9  赠送优惠券 <coupon.download>
 func Test_CouponDownload(t *testing.T) {
-	r, err := upapi.CouponDownload(appid_14525f83bb3c4dd68eca6511c93cb5ef, &upapi.CouponDownloadParams{
+	r, err := upapi.CouponDownload(config, &upapi.CouponDownloadParams{
 		TransSeqId: upsdk.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3102021031068564",
+		CouponId:   "3102021041373123",
 		CouponNum:  1,
 		Mobile:     "13611703040",
 	})
