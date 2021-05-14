@@ -68,7 +68,7 @@ S52172	接入方编码非法（请检查活动id/机构账户号是否和申请�
 
 var (
 	E00   = ErrNew("00", "ok")
-	E3023 = ErrNew("3023", "用户未注册云闪付APP")
+	E3023 = ErrNew("3023", "请您先注册云闪付APP，再返回本页面参与活动")
 )
 
 type Err struct {
@@ -98,7 +98,8 @@ func (e *Err) NewMsgF(args ...interface{}) *Err {
 }
 
 func (e *Err) Error() string {
-	return e.Msg + ".[" + e.Code + "]"
+	//return e.Msg + ".[" + e.Code + "]"
+	return e.Msg
 }
 
 func (e *Err) JsonMarshal() []byte {

@@ -6,7 +6,7 @@ import (
 	"time"
 )
 
-//
+// wei ce shi cheng gong
 func TestMaktgDraw(t *testing.T) {
 	err := upapi.MaktgDraw(config, &upapi.MaktgDrawParams{
 		TransSeqId: upapi.Rand32(),

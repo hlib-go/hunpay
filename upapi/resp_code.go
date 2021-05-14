@@ -70,7 +70,7 @@ var (
 	E00   = ErrNew("00", "ok")
 	EA10  = ErrNew("a10", "不合法的backend_token，或已过期")
 	EA20  = ErrNew("a20", "不合法的frontend_token，或已过期")
-	E3023 = ErrNew("3023", "用户未注册云闪付APP")
+	E3023 = ErrNew("3023", "请您先注册云闪付APP，再返回本页面参与活动")
 )
 
 type Err struct {
@@ -100,7 +100,8 @@ func (e *Err) NewMsgF(args ...interface{}) *Err {
 }
 
 func (e *Err) Error() string {
-	return e.Msg + ".[" + e.Code + "]"
+	//return e.Msg + ".[" + e.Code + "]"
+	return e.Msg
 }
 
 func (e *Err) JsonMarshal() []byte {
