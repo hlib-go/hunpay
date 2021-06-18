@@ -80,7 +80,7 @@ func CouponDownload(c *Config, p *CouponDownloadParams) (r *CouponDownloadResult
 		err = ErrNew(resp.Resp, "手机号【"+p.Mobile+"】异常-yellowNameList，请咨询银联客服")
 	case "GCUP07060":
 		// Coupon download failed due to userId check failed.[GCUP07060]
-		err = ErrNew(resp.Resp, "您不符合领券规则")
+		err = ErrNew(resp.Resp, "您不符合领券要求，请查看活动说明")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
