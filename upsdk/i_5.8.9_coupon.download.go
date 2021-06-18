@@ -78,6 +78,9 @@ func (up *Unionpay) CouponDownload(p *CouponDownloadParams) (r *CouponDownloadRe
 	case "GCUP07058":
 		//Coupon download failed due to yellowNameList check failed.[GCUP07058]
 		err = ErrNew(resp.Resp, "手机号【"+p.Mobile+"】异常-yellowNameList，请咨询银联客服")
+	case "GCUP07060":
+		// Coupon download failed due to userId check failed.[GCUP07060]
+		err = ErrNew(resp.Resp, "您不符合领券要求，请查看活动说明")
 	default:
 		if resp.Resp != E00.Code {
 			err = ErrNew(resp.Resp, resp.Msg)
