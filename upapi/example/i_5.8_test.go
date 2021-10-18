@@ -2,10 +2,8 @@ package example
 
 import (
 	"encoding/json"
-	"fmt"
 	"github.com/hlib-go/hunpay/upapi"
 	"github.com/hlib-go/hunpay/upsdk"
-	"net/http"
 	"testing"
 	"time"
 )
@@ -19,7 +17,7 @@ func TestQualReduce(t *testing.T) {
 	  "qualType": "mobile",
 	  "qualValue":"13912300661",
 	  "activityNumber":"1320200615282465"*/
-	_, err := upapi.QualReduce(config, "423456789039", "1320200615282465", "3a5d4792-48c3-4416-809d-ada5da535f84", "mobile", "13611703040")
+	_, err := upapi.QualReduce(cfgtoml, "423456789039", "1320200615282465", "3a5d4792-48c3-4416-809d-ada5da535f84", "mobile", "13611703040")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -41,10 +39,10 @@ func TestQualReduce(t *testing.T) {
 */
 // 5.8.9  赠送优惠券 <coupon.download>
 func Test_CouponDownload(t *testing.T) {
-	r, err := upapi.CouponDownload(config, &upapi.CouponDownloadParams{
+	r, err := upapi.CouponDownload(cfgtoml, &upapi.CouponDownloadParams{
 		TransSeqId: upapi.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3112021070287539", //3102021041373123
+		CouponId:   "3102021101311591",
 		CouponNum:  1,
 		Mobile:     "13611703040",
 	})
@@ -64,7 +62,7 @@ func Test_CouponDownload(t *testing.T) {
 // 5.8.10  赠送优惠券结果查询 <coupon.query>
 func Test_CouponQuery(t *testing.T) {
 	//"transSeqId":"4ff007f90a384eee869d99d7166ed342","transTs":"20200906"
-	err := upapi.CouponQuery(config, upsdk.Rand32(), "2922b52272a04cc9a6cec290c2a6d324", "20201015", "")
+	err := upapi.CouponQuery(cfgtoml, upsdk.Rand32(), "2922b52272a04cc9a6cec290c2a6d324", "20201015", "")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -73,7 +71,7 @@ func Test_CouponQuery(t *testing.T) {
 
 // 5.8.12  优惠券活动剩余名额查询
 func Test_ActivityQuota(t *testing.T) {
-	_, err := upapi.ActivityQuota(config, upsdk.Rand32(), "3102020072729846", "5", "")
+	_, err := upapi.ActivityQuota(cfgtoml, upsdk.Rand32(), "3102020072729846", "5", "")
 	if err != nil {
 		t.Error(err.Error())
 		return
@@ -85,7 +83,7 @@ func Test_Notify(t *testing.T) {
 
 	// 示例数据：/coupon/notify.do?discountNum=1&appId=9e211304be4a46fdb7dff03f7a01b2ef&transSeqId=cf5f05a01bd74144bde0432f8d27a567&discountAt=0&orderAt=0&operaTp=04&discountName=%E5%86%9C%E4%B8%9A%E9%93%B6%E8%A1%8C%E4%BF%A1%E7%94%A8%E5%8D%A135%E5%85%83%E5%88%B8&entityId=GZYp%2F%2F2B%2BtgTx9qudT9UkyXuBSLUdGq3M3tjvadYaNDseAAgFGr9glXGCCf91dF0&nonceStr=8qe28DCbkztJWTBs&timestamp=1607325521&entityTp=03&traceId=cf5f05a01bd74144bde0432f8d27a567&discountId=3102020120253762&transTs=20201207151841&signature=HBt9kwRfeXgPybvgdvFYapYtEIIShAh%2BzdpyjdJv8QrakQul4FBtiVcorAsaK84TqGtAGVxkp6MerD0%2Fln%2FDS9ZPcebJsdU8Xga638GtGY8cFE0JEu1URsh7c3j6nhDMJW9RCo9X9gNhz3izYXtqiebc%2BBM0abwPicXLF3S5apkTiwvc018nScTSOLZV1JUx16sL2yFBnQbEJxJaz2v9GRn3aOAj6BmzxUspNSq5hY3NpR9%2FKClbjF3yBxO4fbTebITFp7FXoJUCu%2FlVI3SpM6t8nXk8kyHYP7YhTO2wwix4xTiktGkbKy4wjcX1d3ptahRP%2BslPDcPie5v7kG1JAQ%3D%3D
 
-	http.Handle("/coupon/notify.do", upapi.CouponNotifyHandler(func(appid string) (cfg *upapi.Config, err error) {
+	/*http.Handle("/coupon/notify.do", upapi.CouponNotifyHandler(func(appid string) (cfg *upapi.Config, err error) {
 		cfg = &upapi.Config{
 			ServiceUrl:    "https://open.95516.com/open/access/1.0",
 			AppId:         "9e211304be4a46fdb7dff03f7a01b2ef",
@@ -99,5 +97,5 @@ func Test_Notify(t *testing.T) {
 		fmt.Println("通知结果：", notifyResult.JsonString())
 		return nil
 	}))
-	http.ListenAndServe(":9031", nil)
+	http.ListenAndServe(":9031", nil)*/
 }

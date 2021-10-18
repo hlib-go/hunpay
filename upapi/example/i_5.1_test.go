@@ -7,7 +7,7 @@ import (
 )
 
 func TestFrontToken(t *testing.T) {
-	r, err := upapi.FrontToken(appid_14525f83bb3c4dd68eca6511c93cb5ef)
+	r, err := upapi.FrontToken(cfgtoml)
 	if err != nil {
 		fmt.Println(err.Error())
 	}
@@ -16,7 +16,7 @@ func TestFrontToken(t *testing.T) {
 
 // 5.1.1 获取backendToken<backendToken>
 func TestBackendToken(t *testing.T) {
-	r, err := upapi.BackendToken(config)
+	r, err := upapi.BackendToken(cfgtoml)
 	if err != nil {
 		fmt.Println(err.Error())
 	}

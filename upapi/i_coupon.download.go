@@ -77,7 +77,8 @@ func CouponDownload(c *Config, p *CouponDownloadParams) (r *CouponDownloadResult
 		err = ErrNew(resp.Resp, "卡号受限无法领券")
 	case "GCUP07058":
 		//Coupon download failed due to yellowNameList check failed.[GCUP07058]
-		err = ErrNew(resp.Resp, "手机号【"+p.Mobile+"】异常-yellowNameList，请咨询银联客服")
+		//  手机号【"+p.Mobile+"】异常-yellowNameList，请咨询银联客服
+		err = ErrNew(resp.Resp, "您暂无参与资格，谢谢！[GCUP07058]")
 	case "GCUP07060":
 		// Coupon download failed due to userId check failed.[GCUP07060]
 		err = ErrNew(resp.Resp, "您不符合领券要求，请查看活动说明")

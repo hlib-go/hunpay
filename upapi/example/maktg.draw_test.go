@@ -6,9 +6,9 @@ import (
 	"time"
 )
 
-// wei ce shi cheng gong
+// 未测试成功
 func TestMaktgDraw(t *testing.T) {
-	err := upapi.MaktgDraw(config, &upapi.MaktgDrawParams{
+	err := upapi.MaktgDraw(cfgtoml, &upapi.MaktgDrawParams{
 		TransSeqId: upapi.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
 		Mobile:     "13611703040",
