@@ -12,7 +12,7 @@ func ActivityQuota(c *Config, transSeqId, activityNo, activityType, backendToken
 	bm.Set("activityType", activityType) // 活动类型: 1.u点全场立减（同原线上立减）、2.u点全场券、3线下立减、4折扣券、5代金券、6满抵券、7随机立减券、8凭证券、9提货券、10送货券、11精准营销展示券、12单品券、13单品立减
 	bm.Set("backendToken", backendToken)
 
-	resp, err := Post(c, "/activity.quota ", bm)
+	resp, err := Post(c, "/activity.quota", bm)
 	if err != nil {
 		return
 	}

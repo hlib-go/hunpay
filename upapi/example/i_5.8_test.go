@@ -42,7 +42,7 @@ func Test_CouponDownload(t *testing.T) {
 	r, err := upapi.CouponDownload(cfgtoml, &upapi.CouponDownloadParams{
 		TransSeqId: upapi.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3102021101311591",
+		CouponId:   "3102021101812999",
 		CouponNum:  1,
 		Mobile:     "13611703040",
 	})
@@ -71,7 +71,11 @@ func Test_CouponQuery(t *testing.T) {
 
 // 5.8.12  优惠券活动剩余名额查询
 func Test_ActivityQuota(t *testing.T) {
-	_, err := upapi.ActivityQuota(cfgtoml, upsdk.Rand32(), "3102020072729846", "5", "")
+	bt, err := upapi.BackendToken(cfgtoml)
+	if err != nil {
+		return
+	}
+	_, err = upapi.ActivityQuota(cfgtoml, upsdk.Rand32(), "3102021101812999", "3", bt.BackendToken)
 	if err != nil {
 		t.Error(err.Error())
 		return
