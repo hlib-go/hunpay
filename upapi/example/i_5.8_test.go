@@ -42,7 +42,7 @@ func Test_CouponDownload(t *testing.T) {
 	r, err := upapi.CouponDownload(cfgtoml, &upapi.CouponDownloadParams{
 		TransSeqId: upapi.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3102021101812999",
+		CouponId:   "3102021091704065",
 		CouponNum:  1,
 		Mobile:     "13611703040",
 	})
@@ -57,6 +57,23 @@ func Test_CouponDownload(t *testing.T) {
 		13开头的ID，赠送优惠券接口返回：The coupon activity is not exist.[GCUP06003]
 		31开头的ID，赠送优惠券接口返回：接入方编码非法[S52172]
 	*/
+}
+
+// 补发U惠天天转0.5元卷
+func Test_0_5_coupon(t *testing.T) {
+	r, err := upapi.CouponDownload(cfgtoml, &upapi.CouponDownloadParams{
+		TransSeqId: upapi.Rand32(),
+		TransTs:    time.Now().Format("20060102"),
+		CouponId:   "3102021091704065",
+		CouponNum:  1,
+		Mobile:     "13566346498",
+	})
+	if err != nil {
+		t.Error(err.Error())
+		return
+	}
+	b, _ := json.Marshal(r)
+	t.Log(string(b))
 }
 
 // 5.8.10  赠送优惠券结果查询 <coupon.query>
