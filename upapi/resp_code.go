@@ -101,7 +101,8 @@ func (e *Err) NewMsgF(args ...interface{}) *Err {
 
 func (e *Err) Error() string {
 	//return e.Msg + ".[" + e.Code + "]"
-	return e.Msg
+	e.Msg = strings.ReplaceAll(e.Msg, ".["+e.Code+"]", "")
+	return e.Code + ":" + e.Msg
 }
 
 func (e *Err) JsonMarshal() []byte {

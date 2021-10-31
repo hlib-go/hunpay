@@ -59,7 +59,7 @@ func CouponDownload(c *Config, p *CouponDownloadParams) (r *CouponDownloadResult
 		err = ErrNew(resp.Resp, "超过限制次数")
 	case "GCUP06005":
 		//The coupon is not start to download.[GCUP06005]
-		err = ErrNew(resp.Resp, "闪券未到生效时间")
+		err = ErrNew(resp.Resp, "闪券未到可用时间")
 	case "GCUP06007":
 		// Coupon download rules match failed.[GCUP06007]
 		err = ErrNew(resp.Resp, "规则验证失败，请确认在有效时间内")
