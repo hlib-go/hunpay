@@ -42,7 +42,7 @@ func Test_CouponDownload(t *testing.T) {
 	r, err := upapi.CouponDownload(cfgtoml, &upapi.CouponDownloadParams{
 		TransSeqId: upapi.Rand32(),
 		TransTs:    time.Now().Format("20060102"),
-		CouponId:   "3102021091704065",
+		CouponId:   "3102021102715438",
 		CouponNum:  1,
 		Mobile:     "13611703040",
 	})
