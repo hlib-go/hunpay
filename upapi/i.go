@@ -5,7 +5,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	log "github.com/sirupsen/logrus"
+	"github.com/sirupsen/logrus"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -23,27 +23,42 @@ type RespBody struct {
 // 云闪付接口 POST请求
 func Post(c *Config, path string, bodyMap *BodyMap) (respBody *RespBody, err error) {
 	var (
-		reqBody string
-		resBody string
+		requestId = Rand32()
+		begms     = time.Now().UnixNano() / 1e6
+		reqBody   string
+		resBody   string
 	)
 	defer func() {
 		fmt.Println("请求URL：" + c.ServiceUrl + path)
 		fmt.Println("请求报文：" + reqBody)
 		fmt.Println("响应报文：" + resBody)
+
+		plog := logrus.WithField("requestId", requestId).
+			WithField("path", path).
+			WithField("serviceUrl", c.ServiceUrl).
+			WithField("appid", c.AppId).
+			WithField("requestBody", reqBody).
+			WithField("responseBody", resBody).
+			WithField("millisecond", strconv.FormatInt(time.Now().UnixNano()/1e6-begms, 10))
+		if err != nil {
+			plog.Error("云闪付 请求异常 " + err.Error())
+		} else {
+			plog.Info("云闪付 请求成功")
+		}
 	}()
 
-	plog := log.WithField("path", path)
-	plog.WithField("serviceUrl", c.ServiceUrl).WithField("appid", c.AppId).Info("云闪付请求URL")
+	//plog := log.WithField("requestId", requestId).WithField("path", path)
+	//plog.WithField("serviceUrl", c.ServiceUrl).WithField("appid", c.AppId).Info("云闪付请求URL")
 	bodyBytes, _ := json.Marshal(bodyMap)
 	reqBody = string(bodyBytes)
-	plog.WithField("requestBody", reqBody).Info("云闪付请求报文")
+	//plog.WithField("requestBody", reqBody).Info("云闪付请求报文")
 	resp, err := http.Post(c.ServiceUrl+path, "application/json", strings.NewReader(reqBody))
 	if err != nil {
 		return
 	}
 	if resp.StatusCode != 200 {
-		err = errors.New(resp.Status)
-		plog.WithField("httpStatus", resp.Status).Warn("云闪付响应状态异常")
+		err = errors.New("响应状态 " + resp.Status)
+		//plog.WithField("httpStatus", resp.Status).Info("云闪付响应状态异常")
 		return
 	}
 	bytes, err := ioutil.ReadAll(resp.Body)
@@ -51,7 +66,7 @@ func Post(c *Config, path string, bodyMap *BodyMap) (respBody *RespBody, err err
 		return
 	}
 	resBody = string(bytes)
-	plog.WithField("responseBody", resBody).Warn("云闪付响应报文")
+	//plog.WithField("responseBody", resBody).Info("云闪付响应报文")
 	err = json.Unmarshal(bytes, &respBody)
 	if err != nil {
 		return
@@ -61,7 +76,10 @@ func Post(c *Config, path string, bodyMap *BodyMap) (respBody *RespBody, err err
 
 // Sha256 方式签名
 func Call(c *Config, path string, bm *BodyMap, result interface{}) (err error) {
-	plog := log.WithField("path", path)
+	var (
+		requestId = Rand32()
+	)
+	plog := logrus.WithField("requestId", requestId).WithField("path", path)
 	begmillisecond := time.Now().UnixNano() / 1e6
 	//计算签名
 	signature := bm.Sha256Sign(c.Secret)
